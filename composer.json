@@ -1,0 +1,23 @@
+{
+	"name" : "comcduarte/laminas-box",
+	"description" : "Unoffical Laminas Box API Implementation",
+	"homepage" : "https://github.com/comcduarte/laminas-box",
+	"authors" : [{
+			"name" : "Christopher Duarte",
+			"email" : "christopher.duarte@middletownct.gov",
+			"role" : "Software Engineer"
+		}
+	],
+	"keywords" : [
+		"box",
+		"api",
+		"boxapi",
+		"php",
+		"laminas"
+	],
+	"autoload" : {
+		"psr-4" : {
+			"Laminas\\Box\\" : "src/"
+		}
+	}
+}
