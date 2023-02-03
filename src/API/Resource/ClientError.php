@@ -3,6 +3,8 @@ namespace Laminas\Box\API\Resource;
 
 class ClientError
 {
+    use HydrationTrait;
+    
     /**
      * Value is always error.
      * @var string

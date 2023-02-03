@@ -1,11 +1,12 @@
 <?php
 namespace Laminas\Box\API\Resource;
 
-use Laminas\Hydrator\ArraySerializableHydrator;
 use Laminas\Stdlib\ArraySerializableInterface;
 
 class File extends AbstractResource implements ArraySerializableInterface
 {
+    use HydrationTrait;
+    
     /**
      * 
      * @var string
@@ -35,7 +36,6 @@ class File extends AbstractResource implements ArraySerializableInterface
     
     /**
      * 
-     * @var User
      */
     public $created_by;
     public $description;
@@ -43,7 +43,6 @@ class File extends AbstractResource implements ArraySerializableInterface
     
     /**
      * 
-     * @var File
      */
     public $file_version;
     public $item_status;
@@ -53,7 +52,6 @@ class File extends AbstractResource implements ArraySerializableInterface
     public $parent;
     
     /**
-     * @var object
      */
     public $path_collection;
     
@@ -63,7 +61,6 @@ class File extends AbstractResource implements ArraySerializableInterface
     
     /**
      * 
-     * @var object
      */
     public $shared_link;
     
@@ -122,12 +119,5 @@ class File extends AbstractResource implements ArraySerializableInterface
             $data[$var] = $this->{$var};
         }
         return $data;
-    }
-    
-    public function hydrate($response)
-    {
-        $hydrator = new ArraySerializableHydrator();
-        $hydrator->hydrate($response, $this);
-        return $this;
     }
 }

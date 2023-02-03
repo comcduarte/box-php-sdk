@@ -279,18 +279,57 @@ class Folder extends AbstractResource
                 /**
                  * Returned if the folder_id is not in a recognized format.
                  */
-                return false;
             default:
                 /**
                  * An unexpected client error.
                  */
-                return false;
+                $error = new ClientError();
+                $error->hydrate($this->response);
+                return $error;
         }
     }
     
-    public function list_items_in_folder()
+    public function list_items_in_folder(string $folder_id = null)
     {
+        if (!isset($folder_id)) {
+            return false;
+        }
         
+        $endpoint = 'https://api.box.com/2.0/folders/:folder_id/items';
+        $params = [
+            ':folder_id' => $folder_id,
+        ];
+        $uri = strtr($endpoint, $params);
+        $this->response = $this->get($uri);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                /**
+                 * Returns a collection of files, folders, and web links contained in a folder.
+                 * @TODO Returns Items Collection.  Create Items Resource
+                 */
+                return true;
+            case 403:
+                /**
+                 * Returned when the access token provided in the Authorization header is not recognized or not provided.
+                 */
+            case 404:
+                /**
+                 * Returned if the folder is not found, or the user does not have access to the folder.
+                 */
+            case 405:
+                /**
+                 * Returned if the folder_id is not in a recognized format.
+                 */
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                $error = new ClientError();
+                
+                return false;
+        }
     }
     
     /**
