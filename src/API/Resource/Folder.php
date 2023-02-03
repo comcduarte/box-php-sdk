@@ -289,6 +289,11 @@ class Folder extends AbstractResource
         }
     }
     
+    /**
+     * Retrieves a page of items in a folder. These items can be files, folders, and web links.
+     * @param string $folder_id
+     * @return Items|ClientError
+     */
     public function list_items_in_folder(string $folder_id = null)
     {
         if (!isset($folder_id)) {
@@ -307,9 +312,10 @@ class Folder extends AbstractResource
             case 200:
                 /**
                  * Returns a collection of files, folders, and web links contained in a folder.
-                 * @TODO Returns Items Collection.  Create Items Resource
                  */
-                return true;
+                $items = new Items();
+                $items->hydrate($this->response);
+                return $items;
             case 403:
                 /**
                  * Returned when the access token provided in the Authorization header is not recognized or not provided.
@@ -327,8 +333,8 @@ class Folder extends AbstractResource
                  * An unexpected client error.
                  */
                 $error = new ClientError();
-                
-                return false;
+                $error->hydrate($this->response);
+                return $error;
         }
     }
     

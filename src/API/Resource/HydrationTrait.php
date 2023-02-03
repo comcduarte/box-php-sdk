@@ -6,6 +6,24 @@ use Laminas\Hydrator\ArraySerializableHydrator;
 
 trait HydrationTrait
 {
+    public function exchangeArray(array $array)
+    {
+        foreach (array_keys(get_object_vars($this)) as $var) {
+            if (!empty($array[$var])) {
+                $this->$var = $array[$var];
+            }
+        }
+    }
+    
+    public function getArrayCopy()
+    {
+        $data = [];
+        foreach (array_keys(get_object_vars($this)) as $var) {
+            $data[$var] = $this->{$var};
+        }
+        return $data;
+    }
+    
     public function hydrate($response)
     {
         $hydrator = new ArraySerializableHydrator();
