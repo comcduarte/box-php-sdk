@@ -4,20 +4,13 @@ namespace Laminas\Box\API\Resource;
 use Laminas\Http\Response;
 use Laminas\Hydrator\ClassMethodsHydrator;
 
-class Files
+class Files extends AbstractResources
 {
     /**
-     * A list of Files.
-     * @var File[]
+     * 
+     * @param string $response
+     * @return \Laminas\Box\API\Resource\Files
      */
-    public $entries = [];
-    
-    /**
-     * The number of files.
-     * @var int
-     */
-    public $total_count;
-    
     public function hydrate($response)
     {
         $hydrator = new ClassMethodsHydrator();
