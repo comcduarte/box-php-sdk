@@ -294,7 +294,7 @@ class Folder extends AbstractResource
      * @param string $folder_id
      * @return Items|ClientError
      */
-    public function list_items_in_folder(string $folder_id = null)
+    public function list_items_in_folder(string $folder_id = null, array $query = null)
     {
         if (!isset($folder_id)) {
             return false;
@@ -304,6 +304,16 @@ class Folder extends AbstractResource
         $params = [
             ':folder_id' => $folder_id,
         ];
+        
+        if (isset($query)) {
+            $endpoint .= '?:query';
+            $params[':query'] = '';
+            
+            foreach ($query as $field => $value) {
+                $params[':query'] .= sprintf('%s=%s', $field, $value);
+            }
+        }
+        
         $uri = strtr($endpoint, $params);
         $this->response = $this->get($uri);
         
