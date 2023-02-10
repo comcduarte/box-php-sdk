@@ -92,11 +92,13 @@ class File extends AbstractResource implements ArraySerializableInterface
         switch ($this->response->getStatusCode())
         {
             case 200:
+                $file = new File();
+                $file->hydrate($this->getResponse());
+                return $file;
+            case 304:
                 /**
                  * @TODO Populate Error Responses.
                  */
-                return $this->getResponse();
-            case 304:
             case 401:
             case 404:
             case 405:
