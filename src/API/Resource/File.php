@@ -72,15 +72,43 @@ class File extends AbstractResource implements ArraySerializableInterface
      */
     
     
-    public function get_file_information(string $id)
+    public function get_file_information(string $file_id = null)
     {
+        if (!isset($file_id)) {
+            return false;
+        }
+        
         $endpoint = 'https://api.box.com/2.0/files/:file_id';
+        
         $params = [
-            ':file_id' => $id,
+            ':file_id' => $file_id,
         ];
+        
         $uri = strtr($endpoint, $params);
         
+        $uri = strtr($endpoint, $params);
         $this->response = $this->get($uri);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                /**
+                 * @TODO Populate Error Responses.
+                 */
+                return $this->getResponse();
+            case 304:
+            case 401:
+            case 404:
+            case 405:
+            case 415:
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                $error = new ClientError();
+                $error->hydrate($this->getResponse());
+                return $error;
+        }
     }
     
     public function get_file_thumbnail() {}
