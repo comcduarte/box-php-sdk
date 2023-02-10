@@ -118,8 +118,6 @@ class File extends AbstractResource implements ArraySerializableInterface
             ':file_id' => $file_id,
         ];
         
-        $query = ['access_token' => $this->token];
-        
         if (isset($query)) {
             $endpoint .= '?:query';
             $params[':query'] = '';
