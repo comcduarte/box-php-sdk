@@ -155,7 +155,7 @@ class File extends AbstractResource implements ArraySerializableInterface
                  * An unexpected client error.
                  */
                 $error = new ClientError();
-                $error->hydrate($this->response);
+                $error->hydrate($this->getResponse());
                 return $error;
         }
     }
