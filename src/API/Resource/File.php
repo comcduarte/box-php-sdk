@@ -85,8 +85,6 @@ class File extends AbstractResource implements ArraySerializableInterface
         ];
         
         $uri = strtr($endpoint, $params);
-        
-        $uri = strtr($endpoint, $params);
         $this->response = $this->get($uri);
         
         switch ($this->response->getStatusCode())
