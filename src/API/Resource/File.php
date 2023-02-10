@@ -68,10 +68,10 @@ class File extends AbstractResource implements ArraySerializableInterface
     public $trashed_at;
     
     /**
+     * Retrieves the details about a file.
      * @var string|mixed
+     * @return File|ClientError
      */
-    
-    
     public function get_file_information(string $file_id = null)
     {
         if (!isset($file_id)) {
@@ -90,9 +90,8 @@ class File extends AbstractResource implements ArraySerializableInterface
         switch ($this->response->getStatusCode())
         {
             case 200:
-                $file = new File();
-                $file->hydrate($this->getResponse());
-                return $file;
+                $this->hydrate($this->getResponse());
+                return $this;
             case 304:
                 /**
                  * @TODO Populate Error Responses.
