@@ -103,6 +103,14 @@ class MetadataForm extends Form
             ],
         ]);
         
+        $this->add([
+            'name' => 'FILE_ID',
+            'type' => Hidden::class,
+            'attributes' => [
+                'id' => 'FILE_ID',
+            ],
+        ]);
+        
         $this->add(new Csrf('SECURITY'));
         
         $this->add([

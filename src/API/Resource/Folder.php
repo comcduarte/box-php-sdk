@@ -1,8 +1,12 @@
 <?php
 namespace Laminas\Box\API\Resource;
 
+use Laminas\Box\API\RequestExtraFieldsTrait;
+
 class Folder extends AbstractResource
 {
+    use RequestExtraFieldsTrait;
+    
     public const API_FUNC = '/folders/';
     
     /**
@@ -294,7 +298,7 @@ class Folder extends AbstractResource
      * @param string $folder_id
      * @return Items|ClientError
      */
-    public function list_items_in_folder(string $folder_id = null, array $query = null)
+    public function list_items_in_folder(string $folder_id = null)
     {
         if (!isset($folder_id)) {
             return false;
@@ -305,16 +309,7 @@ class Folder extends AbstractResource
             ':folder_id' => $folder_id,
         ];
         
-        if (isset($query)) {
-            $endpoint .= '?:query';
-            $params[':query'] = '';
-            
-            foreach ($query as $field => $value) {
-                $params[':query'] .= sprintf('%s=%s', $field, $value);
-            }
-        }
-        
-        $uri = strtr($endpoint, $params);
+        $uri = $this->generate_uri($endpoint, $params);
         $this->response = $this->get($uri);
         
         switch ($this->response->getStatusCode())

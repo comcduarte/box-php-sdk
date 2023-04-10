@@ -180,6 +180,26 @@ abstract class AbstractResource
         return $this->response;
     }
     
+    /**
+     * Generates URI
+     * @param string $endpoint
+     * @param array $params
+     * @return string
+     */
+    public function generate_uri(string $endpoint, array $params)
+    {
+        if (isset($this->query)) {
+            $endpoint .= '?:query';
+            $params[':query'] = '';
+            
+            foreach ($this->query as $field => $value) {
+                $params[':query'] .= sprintf('%s=%s', $field, $value);
+            }
+        }
+        
+        return strtr($endpoint, $params);
+    }
+    
     public function exchangeArray(array $array)
     {
         foreach (array_keys(get_object_vars($this)) as $var) {

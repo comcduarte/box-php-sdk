@@ -1,11 +1,13 @@
 <?php
 namespace Laminas\Box\API\Resource;
 
+use Laminas\Box\API\RepresentationsTrait;
 use Laminas\Stdlib\ArraySerializableInterface;
 
 class File extends AbstractResource implements ArraySerializableInterface
 {
     use HydrationTrait;
+    use RepresentationsTrait;
     
     /**
      * 
@@ -70,7 +72,7 @@ class File extends AbstractResource implements ArraySerializableInterface
     /**
      * Retrieves the details about a file.
      * @var string|mixed
-     * @return File|ClientError
+     * @return $this |ClientError
      */
     public function get_file_information(string $file_id = null)
     {
@@ -84,7 +86,7 @@ class File extends AbstractResource implements ArraySerializableInterface
             ':file_id' => $file_id,
         ];
         
-        $uri = strtr($endpoint, $params);
+        $uri = $this->generate_uri($endpoint, $params);
         $this->response = $this->get($uri);
         
         switch ($this->response->getStatusCode())
@@ -112,9 +114,15 @@ class File extends AbstractResource implements ArraySerializableInterface
     
     public function get_file_thumbnail() {}
     
-    public function copy_file(string $file_id, $data)
+    /**
+     * 
+     * @param string $file_id
+     * @param array $data 
+     * @return boolean
+     */
+    public function copy_file(string $file_id, array $data = [])
     {
-        if (!isset($file_id) | !isset($data)) {
+        if (!isset($file_id)) {
             return FALSE;
         }
         
@@ -122,13 +130,94 @@ class File extends AbstractResource implements ArraySerializableInterface
         $params = [
             ':file_id' => $file_id,
         ];
-        $uri = strtr($endpoint, $params);
+        
+        $uri = $this->generate_uri($endpoint, $params);
         $this->response = $this->post($uri, $data);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 201:
+                /**
+                 * Returns a collection of files, folders, and web links contained in a folder.
+                 */
+                $file = new File($this->token);
+                $file->hydrate($this->response);
+                return $file;
+            case 304:
+                /**
+                 * Returns an empty response when the If-None-Match header matches the current etag value of the file. This indicates that the file has not changed since it was last requested.
+                 */
+                return null;
+            case 403:
+                /**
+                 * Returned when the access token provided in the Authorization header is not recognized or not provided.
+                 */
+            case 404:
+                /**
+                 * Returned if the folder is not found, or the user does not have access to the folder.
+                 */
+            case 409:
+                /**
+                 * Returned if the folder_id is not in a recognized format.
+                 */
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                $error = new ClientError();
+                $error->hydrate($this->response);
+                return $error;
+        }
     }
     
     public function update_file() {}
     
-    public function delete_file() {}
+    public function delete_file(string $file_id)
+    {
+        if (!isset($file_id)) {
+            return FALSE;
+        }
+        
+        $endpoint = 'https://api.box.com/2.0/files/:file_id';
+        $params = [
+            ':file_id' => $file_id,
+        ];
+        
+        $uri = $this->generate_uri($endpoint, $params);
+        $this->response = $this->delete($uri);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 204:
+                /**
+                 * Returns an empty response when the file has been successfully deleted.
+                 */
+                return;
+            case 401:
+                /**
+                 * Returned when the access token provided in the Authorization header is not recognized or not provided.
+                 */
+            case 404:
+                /**
+                 * Returned if the file is not found or has already been deleted, or the user does not have access to the file.
+                 */
+            case 405:
+                /**
+                 * Returned if the file_id is not in a recognized format.
+                 */
+            case 412:
+                /**
+                 * Returns an error when the If-Match header does not match the current etag value of the file. This indicates that the file has changed since it was last requested.
+                 */
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                $error = new ClientError();
+                $error->hydrate($this->response);
+                return $error;
+        }
+    }
     
     /**
      * Returns the contents of a file in binary format.
@@ -184,4 +273,41 @@ class File extends AbstractResource implements ArraySerializableInterface
                 return $error;
         }
     }
+    
+    public function download_file_representation()
+    {
+        $this->headers->clearHeaders();
+        $endpoint = $this->representations['entries'][0]['content']['url_template'];
+        
+        $params = [
+            '{+asset_path}' => "",
+        ];
+        
+        $uri = $this->generate_uri($endpoint, $params);
+        $this->response = $this->get($uri);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                return $this->getResponse();
+            case 202:
+                throw new \Exception('202 Retry Error');
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                $error = new ClientError();
+                $error->hydrate($this->getResponse());
+                return $error;
+        }
+    }
+    
+    public function request_desired_representation(string $type = null, string $size = null)
+    {
+        $this->headers->clearHeaders();
+        $properties = sprintf('[%s?dimensions=%s]', $type, $size);
+        $this->headers->addHeaderLine('x-rep-hints',$properties);
+        return $this->get_file_information($this->id);
+    }
+
 }
