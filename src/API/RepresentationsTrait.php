@@ -1,7 +1,6 @@
 <?php
 namespace Laminas\Box\API;
 
-
 Trait RepresentationsTrait
 {
     use RequestExtraFieldsTrait;
@@ -17,5 +16,4 @@ Trait RepresentationsTrait
     abstract public function request_desired_representation();
     
     abstract public function download_file_representation();
-
 }

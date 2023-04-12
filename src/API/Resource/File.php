@@ -2,6 +2,7 @@
 namespace Laminas\Box\API\Resource;
 
 use Laminas\Box\API\RepresentationsTrait;
+use Laminas\Http\Response;
 use Laminas\Stdlib\ArraySerializableInterface;
 
 class File extends AbstractResource implements ArraySerializableInterface
@@ -276,6 +277,13 @@ class File extends AbstractResource implements ArraySerializableInterface
     
     public function download_file_representation()
     {
+        /**
+         * If representation doesn't exist, return a blank response.
+         */
+        if (!isset($this->representations['entries'][0])) {
+            return new Response();
+        }
+        
         $this->headers->clearHeaders();
         $endpoint = $this->representations['entries'][0]['content']['url_template'];
         
