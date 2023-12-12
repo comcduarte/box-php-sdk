@@ -119,12 +119,15 @@ class File extends AbstractResource implements ArraySerializableInterface
      * 
      * @param string $file_id
      * @param array $data 
-     * @return boolean
+     * @return $this | ClientError | Boolean
      */
     public function copy_file(string $file_id, array $data = [])
     {
         if (!isset($file_id)) {
-            return FALSE;
+            $error = new ClientError();
+            $error->status = '400';
+            $error->message = 'Failed to pass file_id to function';
+            return $error;
         }
         
         $endpoint = 'https://api.box.com/2.0/files/:file_id/copy';
@@ -149,6 +152,10 @@ class File extends AbstractResource implements ArraySerializableInterface
                  * Returns an empty response when the If-None-Match header matches the current etag value of the file. This indicates that the file has not changed since it was last requested.
                  */
                 return null;
+            case 400:
+                /**
+                 * Returns an error if some of the parameters are missing or not valid.
+                 */
             case 403:
                 /**
                  * Returned when the access token provided in the Authorization header is not recognized or not provided.
