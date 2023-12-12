@@ -1,7 +1,6 @@
 <?php
 namespace Laminas\Box\API\Form;
 
-use Application\Model\MetadataTemplateFieldModel;
 use Laminas\Box\API\Resource\MetadataTemplate;
 use Laminas\Form\Form;
 use Laminas\Form\Element\Csrf;
@@ -25,9 +24,6 @@ class MetadataForm extends Form
     {
         $inputFilter = new InputFilter();
         
-        /**
-         * @var MetadataTemplateFieldModel $field
-         */
         foreach ($this->metadata_template->fields as $field) {
             switch ($field->type) {
                 case 'enum':
