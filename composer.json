@@ -19,5 +19,11 @@
 		"psr-4" : {
 			"Laminas\\Box\\" : "src/"
 		}
+	},
+	"require" : {
+		"laminas/laminas-form" : "~3.17",
+		"laminas/laminas-http" : "~2.19",
+		"laminas/laminas-hydrator" : "~4.15",
+		"laminas/laminas-json" : "~3.6"
 	}
 }
