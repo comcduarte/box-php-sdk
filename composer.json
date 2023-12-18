@@ -21,9 +21,10 @@
 		}
 	},
 	"require" : {
-		"laminas/laminas-form" : "~3.17",
-		"laminas/laminas-http" : "~2.19",
-		"laminas/laminas-hydrator" : "~4.15",
-		"laminas/laminas-json" : "~3.6"
+		"php" : "^8.0",
+		"laminas/laminas-form" : "~3.9",
+		"laminas/laminas-http" : "~2.18",
+		"laminas/laminas-hydrator" : "~4.13",
+		"laminas/laminas-json" : "~3.5"
 	}
 }
