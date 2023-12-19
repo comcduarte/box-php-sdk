@@ -4,7 +4,7 @@ namespace Laminas\Box\API\Resource;
 class User
 {
     public $id;
-    public $type;
+    public $type = 'user';
     public $address;
     public $avatar_url;
     public $created_at;
