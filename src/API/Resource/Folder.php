@@ -405,4 +405,50 @@ class Folder extends AbstractResource
     {
         
     }
+    
+    /**
+     * Retrieves a list of pending and active collaborations for a folder. This returns all the users that have access to the folder or have been invited to the folder.
+     * @param string $folder_id
+     * @return Collaborations|ClientError
+     */
+    public function listFolderCollaborations(string $folder_id = null)
+    {
+        if (!isset($folder_id)) {
+            return false;
+        }
+        
+        $endpoint = 'https://api.box.com/2.0/folders/:folder_id/collaborations';
+        $params = [
+            ':folder_id' => $folder_id,
+        ];
+        $uri = strtr($endpoint, $params);
+        $this->response = $this->get($uri);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                /**
+                 * Returns a collection of collaboration objects. If there are no collaborations on this folder an empty collection will be returned.
+                 * This list includes pending collaborations, for which the status is set to pending, indicating invitations that have been sent but not yet accepted.
+                 * @var \Laminas\Box\API\Resource\Folder $folder
+                 */
+                $json = $this->response->getContent();
+                $ary = json_decode($json, true);
+                
+                $collaborations = new Collaborations($this->token);
+                foreach ($ary['entries'] as $key => $entry) {
+                    $collaboration = new Collaboration($this->token);
+                    $collaboration->hydrate($entry);
+                    $collaborations->entries[$key] = $collaboration;
+                }
+                return $collaborations;
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                $error = new ClientError();
+                $error->hydrate($this->response);
+                return $error;
+        }
+    }
 }
