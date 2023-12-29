@@ -194,7 +194,7 @@ class File extends AbstractResource implements ArraySerializableInterface
             return $error;
         }
         
-        $endpoint = 'https://api.box.com/2.0/files/:file_id/copy';
+        $endpoint = 'https://api.box.com/2.0/files/:file_id';
         $params = [
             ':file_id' => $file_id,
         ];
