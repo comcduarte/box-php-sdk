@@ -114,16 +114,12 @@ abstract class AbstractResource
         return $response;
     }
     
-    protected function put()
-    {
-        $client = new Client();
-        $client->setOptions([
-            'sslverifypeer' => FALSE,
-        ]);
-        $client->setMethod(self::METHOD_PUT);
-    }
-    
-    protected function post(string $uri, array $data)
+    /**
+     * Used for Post and Put cURL Requests
+     * @param string $uri
+     * @param array $data
+     */
+    protected function send(string $uri, array $data, string $method)
     {
         $this->add_authorization();
         $this->add_content_type();
@@ -134,7 +130,11 @@ abstract class AbstractResource
         ]);
         $client->setAdapter(new Curl());
         $client->setUri($uri);
-        $client->setMethod(self::METHOD_POST);
+        
+        /**
+         * $method is PUT or POST based on wrapper.
+         */
+        $client->setMethod($method);
         $client->setHeaders($this->headers);
         
         switch ($this->content_type) {
@@ -151,12 +151,37 @@ abstract class AbstractResource
                 $client->setParameterPost($post);
                 break;
             default:
+                /**
+                 * @TODO Send data to client
+                 */
                 $post = $data;
                 break;
         }
         
         $this->response = $client->send();
         return $this->response;
+    }
+    
+    /**
+     * 
+     * @param string $uri
+     * @param array $data
+     * @return \Laminas\Http\Response
+     */
+    protected function put(string $uri, array $data)
+    {
+        return $this->send($uri, $data, self::METHOD_PUT);
+    }
+    
+    /**
+     * 
+     * @param string $uri
+     * @param array $data
+     * @return \Laminas\Http\Response
+     */
+    protected function post(string $uri, array $data)
+    {
+        return $this->send($uri, $data, self::METHOD_POST);
     }
     
     private function add_authorization()
