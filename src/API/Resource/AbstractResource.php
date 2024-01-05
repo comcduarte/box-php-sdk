@@ -257,4 +257,11 @@ abstract class AbstractResource
         }
         return $this;
     }
+
+    public function error()
+    {
+        $error = new ClientError();
+        $error->hydrate($this->response);
+        return $error;
+    }
 }

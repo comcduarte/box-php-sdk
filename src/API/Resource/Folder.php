@@ -287,9 +287,7 @@ class Folder extends AbstractResource
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->hydrate($this->response);
-                return $error;
+                return $this->error();
         }
     }
     
@@ -337,9 +335,7 @@ class Folder extends AbstractResource
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->hydrate($this->response);
-                return $error;
+                return $this->error();
         }
     }
     
@@ -446,9 +442,7 @@ class Folder extends AbstractResource
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->hydrate($this->response);
-                return $error;
+                return $this->error();
         }
     }
 }

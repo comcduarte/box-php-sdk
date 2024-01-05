@@ -108,9 +108,7 @@ class File extends AbstractResource implements ArraySerializableInterface
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->hydrate($this->getResponse());
-                return $error;
+                return $this->error();
         }
     }
     
@@ -173,9 +171,7 @@ class File extends AbstractResource implements ArraySerializableInterface
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->hydrate($this->response);
-                return $error;
+                return $this->error();
         }
     }
     
@@ -245,9 +241,7 @@ class File extends AbstractResource implements ArraySerializableInterface
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->hydrate($this->response);
-                return $error;
+                return $this->error();
         }
     }
     
@@ -292,9 +286,7 @@ class File extends AbstractResource implements ArraySerializableInterface
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->hydrate($this->response);
-                return $error;
+                return $this->error();
         }
     }
     
@@ -347,9 +339,7 @@ class File extends AbstractResource implements ArraySerializableInterface
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->hydrate($this->getResponse());
-                return $error;
+                return $this->error();
         }
     }
     
@@ -382,9 +372,7 @@ class File extends AbstractResource implements ArraySerializableInterface
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->hydrate($this->getResponse());
-                return $error;
+                return $this->error();
         }
     }
     

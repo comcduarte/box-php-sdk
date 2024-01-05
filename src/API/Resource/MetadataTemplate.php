@@ -144,9 +144,7 @@ class MetadataTemplate extends AbstractResource
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->message = $this->response->getContent();
-                return $error;
+                return $this->error();
         }
     }
     
