@@ -149,7 +149,7 @@ class MetadataInstance extends File
                 /**
                  * Returns the instance of the template that was applied to the file, including the data that was applied to the template.
                  */
-                $metadata_instance = new MetadataInstance();
+                $metadata_instance = new MetadataInstance($this->token);
                 $metadata_instance->hydrate($this->response);
                 return $metadata_instance;
             case 400:
