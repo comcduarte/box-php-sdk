@@ -149,7 +149,9 @@ class MetadataInstance extends File
                 /**
                  * Returns the instance of the template that was applied to the file, including the data that was applied to the template.
                  */
-                $retval = $this;
+                $metadata_instance = new MetadataInstance();
+                $metadata_instance->hydrate($this->response);
+                return $metadata_instance;
             case 400:
                 /**
                  * Returns an error when the request body is not valid.
@@ -166,11 +168,8 @@ class MetadataInstance extends File
                 /**
                  * An unexpected client error.
                  */
-                $retval = new \Exception($this->getResponse()->getContent(), $this->getResponse()->getStatusCode());
-                break;
+                return $this->error();
         }
-        
-        return $retval;
     }
 
     public function update_metadata_instance_on_file()
