@@ -1,9 +1,8 @@
 <?php
 namespace Laminas\Box\API;
 
-use Laminas\Box\API\Resource\ClientError;
-use Laminas\Box\API\Resource\MetadataQuerySearchResults;
 use Laminas\Box\API\Resource\AbstractResource;
+use Laminas\Box\API\Resource\MetadataQuerySearchResults;
 
 class MetadataQuery extends AbstractResource
 {
