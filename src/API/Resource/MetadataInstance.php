@@ -70,11 +70,6 @@ class MetadataInstance extends File
      */
     public $version;
     
-    private function list_metadata_instances(string $id)
-    {
-        
-    }
-    
     /**
      * @param string $endpoint
      * @param array $params
@@ -120,46 +115,40 @@ class MetadataInstance extends File
     }
     
     /**
-     * Retrieves all metadata for a given file.
      * 
-     * @param string $id
-     * @return boolean
+     * @param string $endpoint
+     * @param array $params
+     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
      */
-    public function list_metadata_instances_on_file(string $file_id)
+    private function list_metadata_instances(string $endpoint, array $params)
     {
-        if (! isset($file_id)) {
-            return FALSE;
-        }
-            
-        $endpoint = 'https://api.box.com/2.0/files/:file_id/metadata';
-        $params = [
-            ':file_id' => $file_id,
-        ];
-        $uri = strtr($endpoint, $params);
+        $uri = $this->generate_uri($endpoint, $params);
         $this->response = $this->get($uri);
-    }
-    
-    /**
-     * Retrieves the instance of a metadata template that has been applied to a file.
-     * 
-     * @param string $file_id
-     * @param string $scope
-     * @param string $template_key
-     */
-    public function get_metadata_instances_on_file(string $file_id, string $scope = 'global', string $template_key)
-    {
-        if (!isset($file_id) | !isset($template_key)) {
-            return FALSE;
-        }
         
-        $endpoint = 'https://api.box.com/2.0/files/:file_id/metadata/:scope/:template_key';
-        $params = [
-            ':file_id' => $file_id,
-            ':scope' => $scope,
-            ':template_key' => $template_key,
-        ];
-        $uri = strtr($endpoint, $params);
-        $this->response = $this->get($uri);
+        switch ($this->getResponse()->getStatusCode())
+        {
+            case 200:
+                /**
+                 * Returns all the metadata associated with a file.
+                 * This API does not support pagination and will therefore always return all of the metadata associated to the file.
+                 */
+                $metadata_instances = new MetadataInstances();
+                $metadata_instances->hydrate($this->getResponse());
+                return $metadata_instances;
+            case 403:
+                /**
+                 * Returned when the request parameters are not valid.
+                 */
+            case 404:
+                /**
+                 * Returned when the user does not have access to the file.
+                 */
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
     }
     
     /**
@@ -185,22 +174,54 @@ class MetadataInstance extends File
         return $this->create_metadata_instance($endpoint, $params, $template_key, $data);
     }
 
+    /**
+     * Retrieves all metadata for a given file.
+     * @param string $file_id
+     * @return @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     */
+    public function list_metadata_instances_on_file(string $file_id)
+    {
+        if (! isset($file_id)) {
+            return FALSE;
+        }
+        
+        $endpoint = 'https://api.box.com/2.0/files/:file_id/metadata';
+        $params = [
+            ':file_id' => $file_id,
+        ];
+        
+        return $this->list_metadata_instances($endpoint, $params);
+    }
+    
+    /**
+     * Retrieves the instance of a metadata template that has been applied to a file.
+     *
+     * @param string $file_id
+     * @param string $scope
+     * @param string $template_key
+     */
+    public function get_metadata_instances_on_file(string $file_id, string $scope = 'global', string $template_key)
+    {
+        if (!isset($file_id) | !isset($template_key)) {
+            return FALSE;
+        }
+        
+        $endpoint = 'https://api.box.com/2.0/files/:file_id/metadata/:scope/:template_key';
+        $params = [
+            ':file_id' => $file_id,
+            ':scope' => $scope,
+            ':template_key' => $template_key,
+        ];
+        $uri = strtr($endpoint, $params);
+        $this->response = $this->get($uri);
+    }
+    
     public function update_metadata_instance_on_file()
     {
         
     }
     
     public function remove_metadata_instance_from_file()
-    {
-        
-    }
-    
-    public function list_metadata_instances_on_folder()
-    {
-        
-    }
-    
-    public function get_metadata_instances_on_folder()
     {
         
     }
@@ -221,6 +242,25 @@ class MetadataInstance extends File
         return $this->create_metadata_instance($endpoint, $params, $template_key, $data);
     }
     
+    public function list_metadata_instances_on_folder(string $folder_id)
+    {
+        if (! isset($folder_id)) {
+            return FALSE;
+        }
+        
+        $endpoint = 'https://api.box.com/2.0/folders/:folder_id/metadata';
+        $params = [
+            ':folder_id' => $folder_id,
+        ];
+        
+        return $this->list_metadata_instances($endpoint, $params);
+    }
+    
+    public function get_metadata_instances_on_folder()
+    {
+        
+    }
+        
     public function update_metadata_instance_on_folder()
     {
         
