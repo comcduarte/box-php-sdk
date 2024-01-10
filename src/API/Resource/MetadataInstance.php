@@ -70,6 +70,55 @@ class MetadataInstance extends File
      */
     public $version;
     
+    private function list_metadata_instances(string $id)
+    {
+        
+    }
+    
+    /**
+     * @param string $endpoint
+     * @param array $params
+     * @param string $template_key
+     * @param array $data
+     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     */
+    private function create_metadata_instance(string $endpoint, array $params, string $template_key, $data)
+    {
+        $oTemplate = new MetadataTemplate($this->token);
+        $oTemplate->get_metadata_template_by_id($template_key);
+        
+        $uri = strtr($endpoint, $params);
+        
+        $this->response = $this->post($uri, $data);
+        
+        switch ($this->getResponse()->getStatusCode()) {
+            case 201:
+                /**
+                 * Returns the instance of the template that was applied to the file/folder, including the data that was applied to the template.
+                 */
+                $metadata_instance = new MetadataInstance($this->token);
+                $metadata_instance->hydrate($this->response);
+                return $metadata_instance;
+            case 400:
+                /**
+                 * Returns an error when the request body is not valid.
+                 */
+            case 404:
+                /**
+                 * Returns an error when the file/folder or metadata template could not be found.
+                 */
+            case 409:
+                /**
+                 * Returns an error when an instance of this metadata template is already present on the file/folder.
+                 */
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
+    }
+    
     /**
      * Retrieves all metadata for a given file.
      * 
@@ -126,50 +175,14 @@ class MetadataInstance extends File
             return FALSE;
         }
         
-        $oTemplate = new MetadataTemplate($this->token);
-        $oTemplate->get_metadata_template_by_id($template_key);
-        
         $endpoint = 'https://api.box.com/2.0/files/:file_id/metadata/:scope/:template_key';
         $params = [
             ':file_id' => $file_id,
             ':scope' => $scope,
             ':template_key' => $template_key,
         ];
-        $uri = strtr($endpoint, $params);
         
-        $this->response = $this->post($uri, $data);
-        
-        /**
-         * @TODO Error Reporting
-         * 201 Created
-         * 409 Conflict - Metadata already exists.
-         */
-        switch ($this->getResponse()->getStatusCode()) {
-            case 201:
-                /**
-                 * Returns the instance of the template that was applied to the file, including the data that was applied to the template.
-                 */
-                $metadata_instance = new MetadataInstance($this->token);
-                $metadata_instance->hydrate($this->response);
-                return $metadata_instance;
-            case 400:
-                /**
-                 * Returns an error when the request body is not valid.
-                 */
-            case 404:
-                /**
-                 * Returns an error when the file or metadata template could not be found.
-                 */
-            case 409:
-                /**
-                 * Returns an error when an instance of this metadata template is already present on the file.
-                 */
-            default:
-                /**
-                 * An unexpected client error.
-                 */
-                return $this->error();
-        }
+        return $this->create_metadata_instance($endpoint, $params, $template_key, $data);
     }
 
     public function update_metadata_instance_on_file()
@@ -192,9 +205,20 @@ class MetadataInstance extends File
         
     }
     
-    public function create_metadata_instance_on_folder()
+    public function create_metadata_instance_on_folder(string $folder_id, string $scope = 'global', string $template_key, $data)
     {
+        if (!isset($folder_id) | !isset($template_key)) {
+            return FALSE;
+        }
         
+        $endpoint = 'https://api.box.com/2.0/folders/:folder_id/metadata/:scope/:template_key';
+        $params = [
+            ':folder_id' => $folder_id,
+            ':scope' => $scope,
+            ':template_key' => $template_key,
+        ];
+        
+        return $this->create_metadata_instance($endpoint, $params, $template_key, $data);
     }
     
     public function update_metadata_instance_on_folder()
