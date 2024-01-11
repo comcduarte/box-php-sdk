@@ -202,6 +202,45 @@ class MetadataInstance extends File
     }
     
     /**
+     * 
+     * @param string $endpoint
+     * @param array $params
+     * @return NULL|\Laminas\Box\API\Resource\ClientError
+     */
+    private function remove_metadata_instance(string $endpoint, array $params)
+    {
+        $uri = strtr($endpoint, $params);
+        $this->response = $this->delete($uri);
+        
+        switch ($this->response->getStatusCode()) {
+            case 204:
+                /**
+                 * Returns an empty response when the metadata is successfully deleted.
+                 */
+                return null;
+            case 400:
+                /**
+                 * Returned when the request parameters are not valid. This may happen of the scope is not valid.
+                 */
+            case 404:
+                /**
+                 * Returns an error when the file does not have an instance of the metadata template applied to it, or when the user does not have access to the file.
+                 * instance_not_found - An instance of the metadata template with the given scope and templateKey was not found on this file.
+                 * not_found - The file was not found, or the user does not have access to the file.
+                 */
+            case 405:
+                /**
+                 * Returned when the method was not allowed.
+                 */
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
+    }
+    
+    /**
      * Scope value is one of [global|enterprise_{enterprise_id}]
      * 
      * @param string $file_id
@@ -273,9 +312,20 @@ class MetadataInstance extends File
         
     }
     
-    public function remove_metadata_instance_from_file()
+    public function remove_metadata_instance_from_file(string $file_id, string $scope = 'global', string $template_key)
     {
+        if (!isset($file_id) | !isset($template_key)) {
+            return FALSE;
+        }
         
+        $endpoint = 'https://api.box.com/2.0/files/:file_id/metadata/:scope/:template_key';
+        $params = [
+            ':file_id' => $file_id,
+            ':scope' => $scope,
+            ':template_key' => $template_key,
+        ];
+        
+        return $this->remove_metadata_instance($endpoint, $params);
     }
     
     public function create_metadata_instance_on_folder(string $folder_id, string $scope = 'global', string $template_key, $data)
@@ -336,8 +386,19 @@ class MetadataInstance extends File
         
     }
     
-    public function remove_metadata_instance_from_folder()
+    public function remove_metadata_instance_from_folder(string $folder_id, string $scope = 'global', string $template_key)
     {
+        if (!isset($folder_id) | !isset($template_key)) {
+            return FALSE;
+        }
         
+        $endpoint = 'https://api.box.com/2.0/folders/:folder_id/metadata/:scope/:template_key';
+        $params = [
+            ':folder_id' => $folder_id,
+            ':scope' => $scope,
+            ':template_key' => $template_key,
+        ];
+        
+        return $this->remove_metadata_instance($endpoint, $params);
     }
 }
