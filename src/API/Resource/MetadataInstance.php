@@ -79,11 +79,7 @@ class MetadataInstance extends File
      */
     private function create_metadata_instance(string $endpoint, array $params, string $template_key, $data)
     {
-        $oTemplate = new MetadataTemplate($this->token);
-        $oTemplate->get_metadata_template_by_id($template_key);
-        
         $uri = strtr($endpoint, $params);
-        
         $this->response = $this->post($uri, $data);
         
         switch ($this->getResponse()->getStatusCode()) {
@@ -152,6 +148,60 @@ class MetadataInstance extends File
     }
     
     /**
+     * 
+     * @param string $endpoint
+     * @param array $params
+     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     */
+    private function get_metadata_instance(string $endpoint, array $params)
+    {
+        $uri = strtr($endpoint, $params);
+        $this->response = $this->get($uri);
+        
+        switch ($this->response->getStatusCode()) {
+            case 200:
+                /**
+                 * An instance of the metadata template that includes additional "key:value" pairs defined by the user or an application.
+                 */
+                $metadata_instance = new MetadataInstance($this->token);
+                
+                /**
+                 * API returns global properties with prefix of $
+                 * Remove $ and set properties in array before hydrating
+                 */
+                $data = json_decode($this->response->getContent(), true);
+                foreach ($data as $key => $value) {
+                    $property = trim($key, '$');
+                    
+                    if (property_exists($this, $property)) {
+                        $data[$property] = $value;
+                    }
+                    
+                }
+                
+                $metadata_instance->hydrate($data);
+                return $metadata_instance;
+            case 403:
+                /**
+                 * Returned when the request parameters are not valid.
+                 */
+            case 404:
+                /**
+                 * Returned if the metadata template specified was not applied to this file or the user does not have access to the file.
+                 */
+            case 405:
+                /**
+                 * Returned when the method was not allowed.
+                 */
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
+    }
+    
+    /**
      * Scope value is one of [global|enterprise_{enterprise_id}]
      * 
      * @param string $file_id
@@ -199,6 +249,7 @@ class MetadataInstance extends File
      * @param string $file_id
      * @param string $scope
      * @param string $template_key
+     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
      */
     public function get_metadata_instances_on_file(string $file_id, string $scope = 'global', string $template_key)
     {
@@ -212,8 +263,9 @@ class MetadataInstance extends File
             ':scope' => $scope,
             ':template_key' => $template_key,
         ];
-        $uri = strtr($endpoint, $params);
-        $this->response = $this->get($uri);
+        
+        return $this->get_metadata_instance($endpoint, $params);
+        
     }
     
     public function update_metadata_instance_on_file()
@@ -256,9 +308,27 @@ class MetadataInstance extends File
         return $this->list_metadata_instances($endpoint, $params);
     }
     
-    public function get_metadata_instances_on_folder()
+    /**
+     * Retrieves the instance of a metadata template that has been applied to a Folder
+     * @param string $folder_id
+     * @param string $scope
+     * @param string $template_key
+     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     */
+    public function get_metadata_instances_on_folder(string $folder_id, string $scope = 'global', string $template_key)
     {
+        if (!isset($folder_id) | !isset($template_key)) {
+            return FALSE;
+        }
         
+        $endpoint = 'https://api.box.com/2.0/folders/:folder_id/metadata/:scope/:template_key';
+        $params = [
+            ':folder_id' => $folder_id,
+            ':scope' => $scope,
+            ':template_key' => $template_key,
+        ];
+        
+        return $this->get_metadata_instance($endpoint, $params);
     }
         
     public function update_metadata_instance_on_folder()
