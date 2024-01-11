@@ -88,7 +88,22 @@ class MetadataInstance extends File
                  * Returns the instance of the template that was applied to the file/folder, including the data that was applied to the template.
                  */
                 $metadata_instance = new MetadataInstance($this->token);
-                $metadata_instance->hydrate($this->response);
+                
+                /**
+                * API returns global properties with prefix of $
+                * Remove $ and set properties in array before hydrating
+                */
+                $data = json_decode($this->response->getContent(), true);
+                foreach ($data as $key => $value) {
+                    $property = trim($key, '$');
+                    
+                    if (property_exists($this, $property)) {
+                        $data[$property] = $value;
+                    }
+                    
+                }
+                
+                $metadata_instance->hydrate($data);
                 return $metadata_instance;
             case 400:
                 /**
