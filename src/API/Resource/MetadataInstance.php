@@ -290,7 +290,7 @@ class MetadataInstance extends File
      * @param string $template_key
      * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
      */
-    public function get_metadata_instances_on_file(string $file_id, string $scope = 'global', string $template_key)
+    public function get_metadata_instance_on_file(string $file_id, string $scope = 'global', string $template_key)
     {
         if (!isset($file_id) | !isset($template_key)) {
             return FALSE;
@@ -365,7 +365,7 @@ class MetadataInstance extends File
      * @param string $template_key
      * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
      */
-    public function get_metadata_instances_on_folder(string $folder_id, string $scope = 'global', string $template_key)
+    public function get_metadata_instance_on_folder(string $folder_id, string $scope = 'global', string $template_key)
     {
         if (!isset($folder_id) | !isset($template_key)) {
             return FALSE;
