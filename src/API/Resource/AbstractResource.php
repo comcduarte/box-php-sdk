@@ -138,6 +138,7 @@ abstract class AbstractResource
         $client->setHeaders($this->headers);
         
         switch ($this->content_type) {
+            case 'application/json-patch+json':
             case 'application/json':
                 $client->setRawBody(json_encode($data));
                 break;

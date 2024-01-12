@@ -216,6 +216,53 @@ class MetadataInstance extends File
         }
     }
     
+    
+    private function update_metadata_instance(string $endpoint, array $params, $data)
+    {
+        $this->content_type = 'application/json-patch+json';
+        
+        $uri = strtr($endpoint, $params);
+        $this->response = $this->put($uri, $data);
+        
+        switch ($this->getResponse()->getStatusCode()) {
+            case 200:
+                /**
+                 * Returns the updated metadata template instance, with the custom template data included.
+                 */
+                $metadata_instance = new MetadataInstance($this->token);
+                
+                /**
+                 * API returns global properties with prefix of $
+                 * Remove $ and set properties in array before hydrating
+                 */
+                $data = json_decode($this->response->getContent(), true);
+                foreach ($data as $key => $value) {
+                    $property = trim($key, '$');
+                    
+                    if (property_exists($this, $property)) {
+                        $data[$property] = $value;
+                    }
+                    
+                }
+                
+                $metadata_instance->hydrate($data);
+                return $metadata_instance;
+            case 400:
+                /**
+                 * Returns an error when the request body is not valid.
+                 */
+            case 500:
+                /**
+                 * Returns an error in some edge cases when the request body is not a valid array of JSON Patch items.
+                 */
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
+    }
+    
     /**
      * 
      * @param string $endpoint
@@ -322,9 +369,31 @@ class MetadataInstance extends File
         
     }
     
-    public function update_metadata_instance_on_file()
+    /**
+     * Updates a piece of metadata on a file.
+     * The metadata instance can only be updated if the template has already been applied to the file before. When editing metadata, only values that match the metadata template schema will be accepted.
+     * The update is applied atomically. If any errors occur during the application of the operations, the metadata instance will not be changed.
+     * 
+     * @param string $file_id
+     * @param string $scope
+     * @param string $template_key
+     * @param array $data
+     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     */
+    public function update_metadata_instance_on_file(string $file_id, string $scope = 'global', string $template_key, $data)
     {
+        if (!isset($file_id) | !isset($template_key)) {
+            return FALSE;
+        }
         
+        $endpoint = 'https://api.box.com/2.0/files/:file_id/metadata/:scope/:template_key';
+        $params = [
+            ':file_id' => $file_id,
+            ':scope' => $scope,
+            ':template_key' => $template_key,
+        ];
+        
+        return $this->update_metadata_instance($endpoint, $params, $data);
     }
     
     public function remove_metadata_instance_from_file(string $file_id, string $scope = 'global', string $template_key)
@@ -395,10 +464,32 @@ class MetadataInstance extends File
         
         return $this->get_metadata_instance($endpoint, $params);
     }
-        
-    public function update_metadata_instance_on_folder()
+    
+    /**
+     * Updates a piece of metadata on a folder.
+     * The metadata instance can only be updated if the template has already been applied to the folder before. When editing metadata, only values that match the metadata template schema will be accepted.
+     * The update is applied atomically. If any errors occur during the application of the operations, the metadata instance will not be changed.
+     * 
+     * @param string $folder_id
+     * @param string $scope
+     * @param string $template_key
+     * @param array $data
+     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     */
+    public function update_metadata_instance_on_folder(string $folder_id, string $scope = 'global', string $template_key, $data)
     {
+        if (!isset($folder_id) | !isset($template_key)) {
+            return FALSE;
+        }
         
+        $endpoint = 'https://api.box.com/2.0/folders/:folder_id/metadata/:scope/:template_key';
+        $params = [
+            ':folder_id' => $folder_id,
+            ':scope' => $scope,
+            ':template_key' => $template_key,
+        ];
+        
+        return $this->update_metadata_instance($endpoint, $params, $data);
     }
     
     public function remove_metadata_instance_from_folder(string $folder_id, string $scope = 'global', string $template_key)
