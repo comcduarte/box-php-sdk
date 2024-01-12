@@ -77,7 +77,7 @@ class MetadataInstance extends File
      * @param array $data
      * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
      */
-    private function create_metadata_instance(string $endpoint, array $params, string $template_key, $data)
+    private function create_metadata_instance(string $endpoint, array $params, $data)
     {
         $uri = strtr($endpoint, $params);
         $this->response = $this->post($uri, $data);
@@ -275,7 +275,7 @@ class MetadataInstance extends File
             ':template_key' => $template_key,
         ];
         
-        return $this->create_metadata_instance($endpoint, $params, $template_key, $data);
+        return $this->create_metadata_instance($endpoint, $params, $data);
     }
 
     /**
@@ -356,7 +356,7 @@ class MetadataInstance extends File
             ':template_key' => $template_key,
         ];
         
-        return $this->create_metadata_instance($endpoint, $params, $template_key, $data);
+        return $this->create_metadata_instance($endpoint, $params, $data);
     }
     
     public function list_metadata_instances_on_folder(string $folder_id)
