@@ -25,6 +25,7 @@
 		"laminas/laminas-form" : "~3.9",
 		"laminas/laminas-http" : "~2.18",
 		"laminas/laminas-hydrator" : "~4.13",
-		"laminas/laminas-json" : "~3.5"
+		"laminas/laminas-json" : "~3.5",
+		"firebase/php-jwt" : "~6.10"
 	}
 }

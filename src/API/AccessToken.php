@@ -1,6 +1,7 @@
 <?php
 namespace Laminas\Box\API;
 
+use Firebase\JWT\JWT;
 use Laminas\Box\API\Resource\AbstractResource;
 use Laminas\Json\Json;
 use InvalidArgumentException;
@@ -23,6 +24,7 @@ class AccessToken extends AbstractResource
     public $box_subject_type;
     public $client_id;
     public $client_secret;
+    public $code;
     public $grant_type;
     public $refresh_token;
     public $resource;
@@ -60,7 +62,21 @@ class AccessToken extends AbstractResource
          */
         $this->exchangeArray($parameters);
         
-        $this->request_access_token($parameters);
+        switch ($parameters['grant_type']) {
+            case 'client_credentials':
+                $params = $parameters;
+                break;
+            case 'urn:ietf:params:oauth:grant-type:jwt-bearer':
+                $params = [
+                    'grant_type' => $this->grant_type,
+                    'client_id' => $this->client_id,
+                    'client_secret' => $this->client_secret,
+                    'assertion' => $this->create_jwt_assertion($parameters['public_key_id'], $parameters['private_key'], $parameters['passphrase']),
+                ];
+                break;
+        }
+        
+        $this->request_access_token($params);
     }
     
     public function request_access_token(array $parameters)
@@ -155,5 +171,34 @@ class AccessToken extends AbstractResource
             $this->request_access_token();
         } 
         return $this->access_token;
+    }
+
+    private function decrypt_private_key($private_key, $passphrase)
+    {
+        $key = openssl_pkey_get_private($private_key, $passphrase);
+        if (!$key) {
+            throw new \Exception('Unable to create key');
+        }
+        return $key;
+    }
+    
+    private function create_jwt_assertion($public_key_id, $private_key, $passphrase)
+    {
+        $authenticationUrl = 'https://api.box.com/oauth2/token';
+        
+        $claims = [
+            'iss' => $this->client_id,
+            'sub' => $this->box_subject_id,
+            'box_sub_type' => $this->box_subject_type,
+            'aud' => $authenticationUrl,
+            'jti' => base64_encode(random_bytes(64)),
+            'exp' => time() + 45,
+            'kid' => $public_key_id,
+        ];
+        
+        $key = $this->decrypt_private_key($private_key, $passphrase);
+        
+        $assertion = JWT::encode($claims, $key, 'RS512');
+        return $assertion;
     }
 }
