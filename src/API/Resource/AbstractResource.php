@@ -259,9 +259,14 @@ abstract class AbstractResource
         return $this;
     }
 
-    public function error()
+    /**
+     * @return ClientError | OAuth20Error
+     */
+    public function error($error = null)
     {
-        $error = new ClientError();
+        if (!$error) {
+            $error = new ClientError();
+        }
         $error->hydrate($this->response);
         return $error;
     }
