@@ -3,11 +3,15 @@ namespace Laminas\Box\API;
 
 use Firebase\JWT\JWT;
 use Laminas\Box\API\Resource\AbstractResource;
-use Laminas\Json\Json;
+use Laminas\Box\API\Resource\ClientError;
+use Laminas\Box\API\Resource\HydrationTrait;
+use Laminas\Box\API\Resource\OAuth20Error;
 use InvalidArgumentException;
 
 class AccessToken extends AbstractResource
 {
+    use HydrationTrait;
+    
     const API_URL = 'https://api.box.com';
     
     const REQUEST_URI = '/oauth2/token';
@@ -76,9 +80,23 @@ class AccessToken extends AbstractResource
                 break;
         }
         
-        $this->request_access_token($params);
+        $result = $this->request_access_token($params);
+        
+        switch (true) {
+            case $result instanceof ClientError:
+                throw new \Exception($result->message);
+                break;
+            case $result instanceof OAuth20Error:
+                throw new \Exception($result->error_description);
+                break;
+        }
     }
     
+    /**
+     * 
+     * @param array $parameters
+     * @return \Laminas\Box\API\AccessToken|\Laminas\Box\API\Resource\ClientError
+     */
     public function request_access_token(array $parameters)
     {
         $this->requires_authorization = false;
@@ -90,18 +108,21 @@ class AccessToken extends AbstractResource
         switch ($response->getStatusCode())
         {
             case 200:
-                //-- OK --//
-                $a = Json::decode($response->getContent());
-                $this->access_token = $a->access_token;
-                $this->expires_in = $a->expires_in;
-                $this->restricted_to = $a->restricted_to;
-                $this->token_type = $a->token_type;
-                return TRUE;
+                /**
+                 * Returns a new Access Token that can be used to make authenticated API calls by passing along the token in a authorization header as follows Authorization: Bearer <Token>.
+                 * @var AccessToken $a
+                 */
+                $this->hydrate($this->response);
+                return $this;
             case 400:
-                //-- Bad Request --//
-                return false;
+                /**
+                 * An authentication error.
+                 */
             default:
-                return FALSE;
+                /**
+                 * An authentication error.
+                 */
+                return $this->error(new OAuth20Error());
         }
     }
     
@@ -168,7 +189,7 @@ class AccessToken extends AbstractResource
     public function getAccessToken()
     {
         if (!isset($this->access_token)) {
-            $this->request_access_token();
+            throw new \Exception('No Access Token Found');
         } 
         return $this->access_token;
     }
