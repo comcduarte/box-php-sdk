@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Laminas\Box;
 
+use Laminas\Box\API\AccessToken;
+
 class ConfigProvider
 {
     /**
-     * Return general-purpose laminas-navigation configuration.
+     * Return general-purpose configuration.
      *
      * @return array
      */
@@ -26,8 +28,11 @@ class ConfigProvider
     public function getDependencyConfig()
     {
         return [
+            'aliases' => [
+                'access-token' => AccessToken::class,
+            ],
             'factories'          => [
-                'access-token' => Service\DefaultAccessTokenFactory::class,
+                AccessToken::class => Service\DefaultAccessTokenFactory::class,
             ],
         ];
     }
