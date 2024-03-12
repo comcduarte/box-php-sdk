@@ -1,7 +1,7 @@
 <?php
 namespace Laminas\Box\API\Resource;
 
-abstract class AbstractResources
+abstract class AbstractResources implements \Countable
 {
     /**
      * Array of Resources
@@ -47,4 +47,9 @@ abstract class AbstractResources
      * @var integer
      */
     public $prev_marker;
+    
+    public function count() : int
+    {
+        return $this->total_count = count($this->entries);
+    }
 }
