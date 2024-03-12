@@ -241,7 +241,7 @@ class Folder extends AbstractResource
      */
     public $watermark_info;
     
-    public function get_folder_information(string $folder_id = null)
+    public function get_folder_information(string $folder_id = null, Query $query = null)
     {
         if (!isset($folder_id)) {
             return false;
@@ -251,6 +251,16 @@ class Folder extends AbstractResource
         $params = [
             ':folder_id' => $folder_id,
         ];
+        
+        if (isset($query)) {
+            $endpoint .= '?:query';
+            $params[':query'] = '';
+            
+            foreach ($query->getArrayCopy() as $field => $value) {
+                $params[':query'] .= sprintf('%s=%s', $field, $value);
+            }
+        }
+        
         $uri = strtr($endpoint, $params);
         $this->response = $this->get($uri);
         
