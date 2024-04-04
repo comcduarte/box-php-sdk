@@ -22,7 +22,7 @@ class Search extends Resource\AbstractResource
     const OP_OR    = 'OR';
     const OP_NOT   = 'NOT';
     
-    const SCOPE_USER         = 'user_conent';
+    const SCOPE_USER         = 'user_content';
     const SCOPE_ENTERPRISE   = 'enterprise_content';
     
     /**
