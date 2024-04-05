@@ -219,6 +219,9 @@ abstract class AbstractResource
             $params[':query'] = '';
             
             foreach ($this->query as $field => $value) {
+                if ($params[':query'] != '') {
+                    $params[':query'] .= '&';
+                }
                 $params[':query'] .= sprintf('%s=%s', $field, $value);
             }
         }

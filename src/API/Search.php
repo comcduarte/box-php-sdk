@@ -73,14 +73,38 @@ class Search extends Resource\AbstractResource
      */
     public $deleted_at_range;
     
-    
+    /**
+     * Limits the search results to items that were deleted by the given list of users, defined as a list of comma separated user IDs.
+     * The trash_content parameter needs to be set to trashed_only.
+     * If searching in trash is not performed, an empty result set is returned. The items need to be owned or shared with the currently authenticated user for them to show up in the search results.
+     * If the user does not have access to any files owned by any of the users, an empty result set is returned.
+     * Data available from 2023-02-01 onwards.
+     * @var string array
+     */
     public $deleted_user_ids;
     
-    
+    /**
+     * example ASC default "DESC"
+     * Defines the direction in which search results are ordered. This API defaults to returning items in descending (DESC) order unless this parameter is explicitly specified.
+     * When results are sorted by relevance the ordering is locked to returning items in descending order of relevance, and this parameter is ignored.
+     * Value is one of DESC,ASC
+     * @var string
+     */
     public $direction;
     
+    /**
+     * example pdf,png,gif
+     * Limits the search results to any files that match any of the provided file extensions. This list is a comma-separated list of file extensions without the dots.
+     * @var string|array
+     */
     public $file_extensions;
     
+    /**
+     * example true default false
+     * Defines whether the search results should include any items that the user recently accessed through a shared link.
+     * When this parameter has been set to true, the format of the response of this API changes to return a list of Search Results with Shared Links
+     * @var boolean
+     */
     public $include_recent_shared_links;
     
     /**
@@ -104,6 +128,13 @@ class Search extends Resource\AbstractResource
      */
     public $offset;
     
+    /**
+     * example 123422,23532,3241212 
+     * Limits the search results to any items that are owned by the given list of owners, defined as a list of comma separated user IDs.
+     * The items still need to be owned or shared with the currently authenticated user for them to show up in the search results. If the user does not have access to any files owned by any of the users an empty result set will be returned.
+     * To search across an entire enterprise, we recommend using the enterprise_content scope parameter which can be requested with our support team.
+     * @var string|array
+     */
     public $owner_user_ids;
     
     /**
@@ -112,6 +143,13 @@ class Search extends Resource\AbstractResource
      */
     public $query;
     
+    /**
+     * example 123422,23532,3241212
+     * Limits the search results to any items that have been updated by the given list of users, defined as a list of comma separated user IDs.
+     * The items still need to be owned or shared with the currently authenticated user for them to show up in the search results. If the user does not have access to any files owned by any of the users an empty result set will be returned.
+     * This feature only searches back to the last 10 versions of an item.
+     * @var string|array
+     */
     public $recent_updater_user_ids;
     
     /**
@@ -122,12 +160,45 @@ class Search extends Resource\AbstractResource
      */
     public $scope;
     
+    /**
+     * example 1000000,5000000
+     * Limits the search results to any items with a size within a given file size range. This applied to files and folders.
+     * Size ranges are defined as comma separated list of a lower and upper byte size limit (inclusive).
+     * The upper and lower bound can be omitted to create open ranges.
+     * @var integer|array
+     */
     public $size_range;
     
+    /**
+     * example modified_at default "relevance"
+     * Defines the order in which search results are returned. This API defaults to returning items by relevance unless this parameter is explicitly specified.
+     *     relevance (default) returns the results sorted by relevance to the query search term. The relevance is based on the occurrence of the search term in the items name, description, content, and additional properties.
+     *     modified_at returns the results ordered in descending order by date at which the item was last modified.
+     * Value is one of modified_at,relevance
+     * @var string
+     */
     public $sort;
     
+    /**
+     * example non_trashed_only default "non_trashed_only"
+     * Determines if the search should look in the trash for items.
+     * By default, this API only returns search results for items not currently in the trash (non_trashed_only).
+     *     trashed_only - Only searches for items currently in the trash
+     *     non_trashed_only - Only searches for items currently not in the trash
+     *     all_items - Searches for both trashed and non-trashed items.
+     * Value is one of non_trashed_only,trashed_only,all_items
+     * @var string
+     */
     public $trash_content;
     
+    /**
+     * example 2014-05-15T13:35:01-07:00,2014-05-17T13:35:01-07:00
+     * Limits the search results to any items updated within a given date range.
+     * Date ranges are defined as comma separated RFC3339 timestamps.
+     * If the start date is omitted (,2014-05-17T13:35:01-07:00) anything updated before the end date will be returned.
+     * If the end date is omitted (2014-05-15T13:35:01-07:00,) the current date will be used as the end date instead.
+     * @var string|array
+     */
     public $updated_at_range;
     
     /**
@@ -151,6 +222,8 @@ class Search extends Resource\AbstractResource
         $params = [
             
         ];
+        
+        $this->generate_query();
         
         $uri = $this->generate_uri($endpoint, $params);
         $this->response = $this->get($uri);
@@ -181,9 +254,7 @@ class Search extends Resource\AbstractResource
                 /**
                  * An unexpected client error.
                  */
-                $error = new Resource\ClientError();
-                $error->hydrate($this->response);
-                return $error;
+                return $this->error();
         }
     }
 
@@ -191,5 +262,27 @@ class Search extends Resource\AbstractResource
     {
         $this->query = ['query' => $query];
         return $this;
+    }
+
+    /**
+     * Creates the query string used with search_for_content().
+     */
+    private function generate_query()
+    {
+        $query = [];
+        $reflection = new \ReflectionClass($this);
+        $properties = $reflection->getProperties(\ReflectionProperty::IS_PUBLIC);
+        
+        /**
+         * @var \ReflectionProperty $property
+         */
+        foreach ($properties as $property) {
+            $name = $property->name;
+            if (isset($this->$name)) {
+                $query[$name] = $this->$name;
+            }
+        }
+        $this->query = $query;
+        return;
     }
 }
