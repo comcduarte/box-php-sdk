@@ -62,9 +62,7 @@ class Collaboration extends AbstractResource
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->hydrate($this->response);
-                return $error;
+                return $this->error();
         }
     }
 
@@ -116,9 +114,7 @@ class Collaboration extends AbstractResource
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->hydrate($this->getResponse());
-                return $error;
+                return $this->error();
         }
     }
 }

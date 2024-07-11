@@ -241,7 +241,15 @@ class Folder extends AbstractResource
      */
     public $watermark_info;
     
-    public function get_folder_information(string $folder_id = null)
+    /**
+     * Retrieves details for a folder, including the first 100 entries in the folder.
+     * Passing sort, direction, offset, and limit parameters in query allows you to manage the list of returned folder items.
+     * To fetch more items within the folder, use the Get items in a folder endpoint.
+     * @param string $folder_id
+     * @param Query $query
+     * @return boolean|\Laminas\Box\API\Resource\Folder|\Laminas\Box\API\Resource\ClientError
+     */
+    public function get_folder_information(string $folder_id = null, Query $query = null)
     {
         if (!isset($folder_id)) {
             return false;
@@ -251,6 +259,16 @@ class Folder extends AbstractResource
         $params = [
             ':folder_id' => $folder_id,
         ];
+        
+        if (isset($query)) {
+            $endpoint .= '?:query';
+            $params[':query'] = '';
+            
+            foreach ($query->getArrayCopy() as $field => $value) {
+                $params[':query'] .= sprintf('%s=%s', $field, $value);
+            }
+        }
+        
         $uri = strtr($endpoint, $params);
         $this->response = $this->get($uri);
         
@@ -287,9 +305,7 @@ class Folder extends AbstractResource
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->hydrate($this->response);
-                return $error;
+                return $this->error();
         }
     }
     
@@ -298,7 +314,7 @@ class Folder extends AbstractResource
      * @param string $folder_id
      * @return Items|ClientError
      */
-    public function list_items_in_folder(string $folder_id = null)
+    public function list_items_in_folder(string $folder_id = null, Query $query = null)
     {
         if (!isset($folder_id)) {
             return false;
@@ -308,6 +324,15 @@ class Folder extends AbstractResource
         $params = [
             ':folder_id' => $folder_id,
         ];
+        
+        if (isset($query)) {
+            $endpoint .= '?:query';
+            $params[':query'] = '';
+            
+            foreach ($query->getArrayCopy() as $field => $value) {
+                $params[':query'] .= sprintf('%s=%s', $field, $value);
+            }
+        }
         
         $uri = $this->generate_uri($endpoint, $params);
         $this->response = $this->get($uri);
@@ -337,9 +362,7 @@ class Folder extends AbstractResource
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->hydrate($this->response);
-                return $error;
+                return $this->error();
         }
     }
     
@@ -404,5 +427,49 @@ class Folder extends AbstractResource
     public function delete_folder()
     {
         
+    }
+    
+    /**
+     * Retrieves a list of pending and active collaborations for a folder. This returns all the users that have access to the folder or have been invited to the folder.
+     * @param string $folder_id
+     * @return Collaborations|ClientError
+     */
+    public function listFolderCollaborations(string $folder_id = null)
+    {
+        if (!isset($folder_id)) {
+            return false;
+        }
+        
+        $endpoint = 'https://api.box.com/2.0/folders/:folder_id/collaborations';
+        $params = [
+            ':folder_id' => $folder_id,
+        ];
+        $uri = strtr($endpoint, $params);
+        $this->response = $this->get($uri);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                /**
+                 * Returns a collection of collaboration objects. If there are no collaborations on this folder an empty collection will be returned.
+                 * This list includes pending collaborations, for which the status is set to pending, indicating invitations that have been sent but not yet accepted.
+                 * @var \Laminas\Box\API\Resource\Folder $folder
+                 */
+                $json = $this->response->getContent();
+                $ary = json_decode($json, true);
+                
+                $collaborations = new Collaborations($this->token);
+                foreach ($ary['entries'] as $key => $entry) {
+                    $collaboration = new Collaboration($this->token);
+                    $collaboration->hydrate($entry);
+                    $collaborations->entries[$key] = $collaboration;
+                }
+                return $collaborations;
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
     }
 }
