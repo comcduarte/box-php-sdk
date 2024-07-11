@@ -391,26 +391,51 @@ class Folder extends AbstractResource
         ];
         
         $uri = strtr($endpoint, $params);
-        $response = $this->post($uri, $data);
+        $this->response = $this->post($uri, $data);
         
-        switch ($response->getStatusCode())
+        switch ($this->response->getStatusCode())
         {
             case 201:
                 //-- OK --//
                 $folder = new Folder($this->token);
-                $folder->hydrate($response);
+                $folder->hydrate($this->response);
                 return $folder;
+            case 400:
+                /**
+                 * Returns an error if some of the parameters are missing or not valid.
+                 * bad_request when a parameter is missing or incorrect.
+                 * item_name_too_long when the folder name is too long.
+                 * item_name_invalid when the folder name contains non-valid characters.
+                 */
+            case 403:
+                /**
+                 * Returns an error if the user does not have the required access to perform
+                 * the action. This might be because they don't have access to the folder or
+                 * parent folder, or because the application does not have permission to
+                 * write files and folders.
+                 */
+                $content = '{"type":"error","status":403,"code":"insufficient_scope","context_info":{"errors":[{"reason":"insufficient_scope","name":"item","message":"The request requires higher privileges than provided by the access token."}]},"help_url":"http:\/\/developers.box.com\/docs\/#errors","message":"Not Found","request_id":"yupg0ohrkrkf4jw3"}';
+                $this->response->setContent($content);
+            case 404:
+                /**
+                 * Returns an error if the parent folder could not be found, or the
+                 * authenticated user does not have access to the parent folder.
+                 *
+                 * not_found when the authenticated user does not have access to the
+                 * parent folder
+                 */
             case 409:
                 /**
-                 * item_name_in_use.
+                 *
+                 * operation_blocked_temporary: Returned if either of the destination or source folders is locked due to another move, copy, delete or restore operation in process.
+                 * The operation can be retried at a later point.
+                 * item_name_in_use: Returned if a folder with the name already exists in the parent folder.
                  */
-                $content = \Laminas\Json\Json::decode($this->response->getContent());
-                $folder = new Folder($this->token);
-                $folder->get_folder_information($content->context_info->conflicts[0]->id);
-                return $folder;
             default:
-                $content = \Laminas\Json\Json::decode($response->getContent());
-                throw new \Exception($content->message, $content->status);
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
         }
     }
     
