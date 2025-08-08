@@ -1,5 +1,5 @@
 <?php
-namespace Laminas\Box\API;
+namespace comcduarte\Box\API;
 
 /**
  * 
@@ -203,7 +203,7 @@ class Search extends Resource\AbstractResource
     
     /**
      * 
-     * @return \Laminas\Box\API\Resource\ClientError|\Laminas\Box\API\Resource\SearchResults
+     * @return \comcduarte\Box\API\Resource\ClientError|\comcduarte\Box\API\Resource\SearchResults
      */
     public function search_for_content()
     {

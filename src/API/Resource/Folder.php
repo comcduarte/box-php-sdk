@@ -1,7 +1,7 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
-use Laminas\Box\API\RequestExtraFieldsTrait;
+use comcduarte\Box\API\RequestExtraFieldsTrait;
 
 class Folder extends AbstractResource
 {
@@ -247,7 +247,7 @@ class Folder extends AbstractResource
      * To fetch more items within the folder, use the Get items in a folder endpoint.
      * @param string $folder_id
      * @param Query $query
-     * @return boolean|\Laminas\Box\API\Resource\Folder|\Laminas\Box\API\Resource\ClientError
+     * @return boolean|\comcduarte\Box\API\Resource\Folder|\comcduarte\Box\API\Resource\ClientError
      */
     public function get_folder_information(string $folder_id = null, Query $query = null)
     {
@@ -279,7 +279,7 @@ class Folder extends AbstractResource
                  * Returns a folder, including the first 100 entries in the folder.
                  * To fetch more items within the folder, please use the Get items in a folder endpoint.
                  * Not all available fields are returned by default. Use the fields query parameter to explicitly request any specific fields.
-                 * @var \Laminas\Box\API\Resource\Folder $folder
+                 * @var \comcduarte\Box\API\Resource\Folder $folder
                  */
                 $folder = new Folder($this->token);
                 $folder->hydrate($this->response);
@@ -370,7 +370,7 @@ class Folder extends AbstractResource
      * Creates a new empty folder within the specified parent folder.
      * @param string $parent_id
      * @param string $name
-     * @return boolean|\Laminas\Box\API\Resource\Folder
+     * @return boolean|\comcduarte\Box\API\Resource\Folder
      */
     public function create_folder(string $parent_id = null, string $name = null)
     {
@@ -453,7 +453,7 @@ class Folder extends AbstractResource
                 /**
                  * Returns a collection of collaboration objects. If there are no collaborations on this folder an empty collection will be returned.
                  * This list includes pending collaborations, for which the status is set to pending, indicating invitations that have been sent but not yet accepted.
-                 * @var \Laminas\Box\API\Resource\Folder $folder
+                 * @var \comcduarte\Box\API\Resource\Folder $folder
                  */
                 $json = $this->response->getContent();
                 $ary = json_decode($json, true);

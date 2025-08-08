@@ -1,10 +1,10 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
-use Laminas\Box\API\RepresentationsTrait;
+use comcduarte\Box\API\RepresentationsTrait;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArraySerializableInterface;
-use Laminas\Box\API\Exception\ClientErrorException;
+use comcduarte\Box\API\Exception\ClientErrorException;
 
 class File extends AbstractResource implements ArraySerializableInterface
 {
@@ -388,7 +388,7 @@ class File extends AbstractResource implements ArraySerializableInterface
      * Utilizes update_file API Call to rename file.
      * @param string $file_id
      * @param string $name
-     * @return \Laminas\Box\API\Resource\File
+     * @return \comcduarte\Box\API\Resource\File
      */
     public function rename_file(string $file_id, string $name)
     {
@@ -407,7 +407,7 @@ class File extends AbstractResource implements ArraySerializableInterface
      * Utilizes update_file API Call to move file to a new folder.
      * @param string $file_id
      * @param string $folder_id
-     * @return \Laminas\Box\API\Resource\File
+     * @return \comcduarte\Box\API\Resource\File
      */
     public function move_file(string $file_id, string $folder_id)
     {

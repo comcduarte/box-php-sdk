@@ -1,5 +1,5 @@
 <?php
-namespace Laminas\Box;
+namespace comcduarte\Box;
 
 class Module
 {

@@ -1,5 +1,5 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
 class ClassificationTemplate
 {
@@ -10,7 +10,7 @@ class ClassificationTemplate
     
     /**
      * 
-     * @var \Laminas\Box\API\Resource\Field[]
+     * @var \comcduarte\Box\API\Resource\Field[]
      */
     public $fields;
 }
