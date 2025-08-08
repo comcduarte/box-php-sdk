@@ -1,10 +1,13 @@
 <?php
-namespace Laminas\Box;
+namespace comcduarte\Box;
 
 class Module
 {
-    public function getConfig()
+    public function getConfig(): array
     {
-        return include __DIR__ . '/../config/module.config.php';
+        $provider = new ConfigProvider();
+        return [
+            'service_manager' => $provider->getDependencyConfig(),
+        ];
     }
 }

@@ -1,7 +1,7 @@
 {
-	"name" : "comcduarte/laminas-box",
-	"description" : "Unoffical Laminas Box API Implementation",
-	"homepage" : "https://github.com/comcduarte/laminas-box",
+	"name" : "comcduarte/box-php-sdk",
+	"description" : "Box PHP API Implementation",
+	"homepage" : "https://github.com/comcduarte/box-php-sdk",
 	"authors" : [{
 			"name" : "Christopher Duarte",
 			"email" : "christopher.duarte@middletownct.gov",
@@ -12,12 +12,19 @@
 		"box",
 		"api",
 		"boxapi",
-		"php",
-		"laminas"
+		"php"
 	],
 	"autoload" : {
 		"psr-4" : {
-			"Laminas\\Box\\" : "src/"
+			"comcduarte\\Box\\" : "src/"
 		}
+	},
+	"require" : {
+		"php" : "^8.2",
+		"laminas/laminas-form" : "~3.9",
+		"laminas/laminas-http" : "~2.18",
+		"laminas/laminas-hydrator" : "~4.13",
+		"laminas/laminas-json" : "~3.5",
+		"firebase/php-jwt" : "~6.10"
 	}
 }

@@ -1,12 +1,17 @@
 <?php
-namespace Laminas\Box\API;
+namespace comcduarte\Box\API;
 
-use Laminas\Box\API\Resource\AbstractResource;
-use Laminas\Json\Json;
+use Firebase\JWT\JWT;
+use comcduarte\Box\API\Resource\AbstractResource;
+use comcduarte\Box\API\Resource\ClientError;
+use comcduarte\Box\API\Resource\HydrationTrait;
+use comcduarte\Box\API\Resource\OAuth20Error;
 use InvalidArgumentException;
 
 class AccessToken extends AbstractResource
 {
+    use HydrationTrait;
+    
     const API_URL = 'https://api.box.com';
     
     const REQUEST_URI = '/oauth2/token';
@@ -23,6 +28,7 @@ class AccessToken extends AbstractResource
     public $box_subject_type;
     public $client_id;
     public $client_secret;
+    public $code;
     public $grant_type;
     public $refresh_token;
     public $resource;
@@ -60,9 +66,37 @@ class AccessToken extends AbstractResource
          */
         $this->exchangeArray($parameters);
         
-        $this->request_access_token($parameters);
+        switch ($parameters['grant_type']) {
+            case 'client_credentials':
+                $params = $parameters;
+                break;
+            case 'urn:ietf:params:oauth:grant-type:jwt-bearer':
+                $params = [
+                    'grant_type' => $this->grant_type,
+                    'client_id' => $this->client_id,
+                    'client_secret' => $this->client_secret,
+                    'assertion' => $this->create_jwt_assertion($parameters['public_key_id'], $parameters['private_key'], $parameters['passphrase']),
+                ];
+                break;
+        }
+        
+        $result = $this->request_access_token($params);
+        
+        switch (true) {
+            case $result instanceof ClientError:
+                throw new \Exception($result->message);
+                break;
+            case $result instanceof OAuth20Error:
+                throw new \Exception($result->error_description);
+                break;
+        }
     }
     
+    /**
+     * 
+     * @param array $parameters
+     * @return \comcduarte\Box\API\AccessToken|\comcduarte\Box\API\Resource\ClientError
+     */
     public function request_access_token(array $parameters)
     {
         $this->requires_authorization = false;
@@ -74,18 +108,21 @@ class AccessToken extends AbstractResource
         switch ($response->getStatusCode())
         {
             case 200:
-                //-- OK --//
-                $a = Json::decode($response->getContent());
-                $this->access_token = $a->access_token;
-                $this->expires_in = $a->expires_in;
-                $this->restricted_to = $a->restricted_to;
-                $this->token_type = $a->token_type;
-                return TRUE;
+                /**
+                 * Returns a new Access Token that can be used to make authenticated API calls by passing along the token in a authorization header as follows Authorization: Bearer <Token>.
+                 * @var AccessToken $a
+                 */
+                $this->hydrate($this->response);
+                return $this;
             case 400:
-                //-- Bad Request --//
-                return false;
+                /**
+                 * An authentication error.
+                 */
             default:
-                return FALSE;
+                /**
+                 * An authentication error.
+                 */
+                return $this->error(new OAuth20Error());
         }
     }
     
@@ -152,8 +189,37 @@ class AccessToken extends AbstractResource
     public function getAccessToken()
     {
         if (!isset($this->access_token)) {
-            $this->request_access_token();
+            throw new \Exception('No Access Token Found');
         } 
         return $this->access_token;
+    }
+
+    private function decrypt_private_key($private_key, $passphrase)
+    {
+        $key = openssl_pkey_get_private($private_key, $passphrase);
+        if (!$key) {
+            throw new \Exception('Unable to create key');
+        }
+        return $key;
+    }
+    
+    private function create_jwt_assertion($public_key_id, $private_key, $passphrase)
+    {
+        $authenticationUrl = 'https://api.box.com/oauth2/token';
+        
+        $claims = [
+            'iss' => $this->client_id,
+            'sub' => $this->box_subject_id,
+            'box_sub_type' => $this->box_subject_type,
+            'aud' => $authenticationUrl,
+            'jti' => base64_encode(random_bytes(64)),
+            'exp' => time() + 45,
+            'kid' => $public_key_id,
+        ];
+        
+        $key = $this->decrypt_private_key($private_key, $passphrase);
+        
+        $assertion = JWT::encode($claims, $key, 'RS512');
+        return $assertion;
     }
 }

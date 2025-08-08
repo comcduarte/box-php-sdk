@@ -1,9 +1,8 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
-use Exception;
 use Laminas\Http\Response;
-use Laminas\Box\API\AccessToken;
+use Exception;
 
 class Upload extends File
 {
@@ -35,7 +34,7 @@ class Upload extends File
 
     /**
      * @param array $attributes
-     * @return Upload
+     * @return $this
      */
     public function setAttributes($attributes)
     {
@@ -53,7 +52,7 @@ class Upload extends File
 
     /**
      * @param string $file
-     * @return Upload
+     * @return $this
      */
     public function setFile($file)
     {
@@ -67,44 +66,68 @@ class Upload extends File
      * 
      * @param array $attributes
      * @param string $file
-     * @return \Laminas\Box\API\Resource\Files
+     * @return \comcduarte\Box\API\Resource\Files
      */
     public function upload_file(array $attributes, string $file)
     {
+        if (!isset($attributes) || !isset($file)) {
+            return false;
+        }
+        
         $endpoint = 'https://upload.box.com/api/2.0/files/content';
         $params = [
             //-- No Parameters are required. --//
         ];
-        $uri = strtr($endpoint, $params);
+        
+        $uri = $this->generate_uri($endpoint, $params);
         
         $data = [
             'attributes' => json_encode($attributes),
             'file' => new \CURLFile($file, mime_content_type($file), $attributes['name']),
         ];
         
-        $response = $this->post($uri, $data);
-        $json = $response->getContent();
-        $ary = json_decode($json, true);
+        $this->response = $this->post($uri, $data);
         
-        /**
-         * @todo If error, do not return files, return error
-         */
         
-        /**
-         * Prepare Return Value.
-         * 
-         * @var \Laminas\Box\API\Resource\Files $files
-         */
-        $files = new Files(new AccessToken([]));
-        foreach ($ary['entries'] as $key => $entry) {
-            $file = new File($this->token);
-            $file->hydrate($entry);
-            $files->entries[$key] = $file;
+        switch ($this->response->getStatusCode()) {
+            case 201:
+                /**
+                 * Returns the new file object in a list.
+                 */
+                $json = $this->response->getContent();
+                $ary = json_decode($json, true);
+        
+                $files = new Files($this->token);
+                foreach ($ary['entries'] as $key => $entry) {
+                    $file = new File($this->token);
+                    $file->hydrate($entry);
+                    $files->entries[$key] = $file;
+                }
+                return $files;
+            case 400:
+                /**
+                 * Returns an error if some of the parameters are missing or not valid.
+                 *     bad_request          when a parameter is missing or incorrect.
+                 *     item_name_too_long   when the folder name is too long.
+                 *     item_name_invalid    when the folder name contains non-valid characters.
+                 */
+            case 409:
+                /**
+                 * Returns an error if the file already exists, or the account has run out of disk space.
+                 */
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
         }
-        return $files;
     }
-
-    //-- should be the same as resouce::post --//
+    
+    /**
+     * Overrides Parent
+     * 
+     * @see \comcduarte\Box\API\Resource\AbstractResource::post()
+     */
     protected function post (string $uri, array $data)
     {
         try {
@@ -120,7 +143,6 @@ class Upload extends File
                     'Expect:',
                 ],
                 CURLOPT_POSTFIELDS => $data,
-//                 CURLOPT_INFILESIZE => filesize($data['file']),
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_SSL_VERIFYPEER => false,
             ]);
@@ -138,7 +160,4 @@ class Upload extends File
         
         return $this->response;
     }
-
-
-    
 }

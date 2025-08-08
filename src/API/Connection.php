@@ -1,5 +1,5 @@
 <?php
-namespace Laminas\Box\API;
+namespace comcduarte\Box\API;
 
 
 class Connection 
@@ -7,7 +7,7 @@ class Connection
     
     /**
      * 
-     * @var \Laminas\Box\API\AccessToken
+     * @var \comcduarte\Box\API\AccessToken
      */
     private $access_token;
                 
@@ -29,7 +29,7 @@ class Connection
     /**
      * 
      * @param AccessToken $access_token
-     * @return \Laminas\Box\API\Connection
+     * @return \comcduarte\Box\API\Connection
      */
     public function setAccessToken(AccessToken $access_token)
     {
