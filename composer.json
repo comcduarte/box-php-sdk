@@ -26,5 +26,6 @@
 		"laminas/laminas-hydrator" : "~4.13",
 		"laminas/laminas-json" : "~3.5",
 		"firebase/php-jwt" : "~6.10"
-	}
+	},
+	"license" : "BSD-3-Clause"
 }
