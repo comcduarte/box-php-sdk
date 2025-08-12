@@ -1,5 +1,5 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
 use Laminas\Http\Response;
 use Laminas\Hydrator\ArraySerializableHydrator;

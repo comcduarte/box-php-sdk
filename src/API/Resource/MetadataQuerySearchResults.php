@@ -1,7 +1,8 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
 class MetadataQuerySearchResults extends AbstractResources
 {
+    use HydrationTrait;
     
 }

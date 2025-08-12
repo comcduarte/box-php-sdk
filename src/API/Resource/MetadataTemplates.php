@@ -1,7 +1,7 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
 class MetadataTemplates extends AbstractResources
 {
-    
+    use HydrationTrait;
 }

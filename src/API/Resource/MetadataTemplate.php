@@ -1,5 +1,5 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
 class MetadataTemplate extends AbstractResource
 {
@@ -40,7 +40,7 @@ class MetadataTemplate extends AbstractResource
      * An ordered list of template fields which are part of the template. 
      * Each field can be a regular text field, date field, number field, as well as a single or multi-select list.
      * 
-     * @var \Laminas\Box\API\Resource\Field[]
+     * @var \comcduarte\Box\API\Resource\Field[]
      */
     public $fields;
     
@@ -116,27 +116,54 @@ class MetadataTemplate extends AbstractResource
     /**
      * 
      */
-    public function list_all_global_metadata_templates()
+    private function list_all_metadata_templates(string $scope)
     {
-        $endpoint = 'https://api.box.com/2.0/metadata_templates/global';
+        $endpoint = "https://api.box.com/2.0/metadata_templates/$scope";
+        
         $params = [
+            //-- No Parameters are required. --//
         ];
+        
         $uri = strtr($endpoint, $params);
         $this->response = $this->get($uri);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                /**
+                 * Returns all of the metadata templates available to all enterprises and their corresponding schema.
+                 */
+                $metadata_templates = new MetadataTemplates();
+                $metadata_templates->hydrate($this->response);
+                return $metadata_templates;
+            case 400:
+                /**
+                 * Returned when the request parameters are not valid.
+                 */
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
     }
     
+    /**
+     *
+     * @return MetadataTemplates
+     */
+    public function list_all_global_metadata_templates()
+    {
+        return $this->list_all_metadata_templates('global');
+    }
     
     /**
      * 
-     * @return boolean
+     * @return MetadataTemplates
      */
     public function list_all_metadata_templates_for_enterprise()
     {
-        $endpoint = 'https://api.box.com/2.0/metadata_templates/enterprise';
-        $params = [
-        ];
-        $uri = strtr($endpoint, $params);
-        $this->response = $this->get($uri);
+        return $this->list_all_metadata_templates('enterprise');
     }
     
     public function create_metadata_template() {}

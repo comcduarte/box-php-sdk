@@ -1,5 +1,5 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
 use Laminas\Http\Response;
 use Laminas\Hydrator\ClassMethodsHydrator;
@@ -9,7 +9,7 @@ class Files extends AbstractResources
     /**
      * 
      * @param string $response
-     * @return \Laminas\Box\API\Resource\Files
+     * @return \comcduarte\Box\API\Resource\Files
      */
     public function hydrate($response)
     {

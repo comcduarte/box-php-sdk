@@ -1,9 +1,10 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
-use Laminas\Box\API\RepresentationsTrait;
+use comcduarte\Box\API\RepresentationsTrait;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArraySerializableInterface;
+use comcduarte\Box\API\Exception\ClientErrorException;
 
 class File extends AbstractResource implements ArraySerializableInterface
 {
@@ -107,9 +108,7 @@ class File extends AbstractResource implements ArraySerializableInterface
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->hydrate($this->getResponse());
-                return $error;
+                return $this->error();
         }
     }
     
@@ -119,12 +118,15 @@ class File extends AbstractResource implements ArraySerializableInterface
      * 
      * @param string $file_id
      * @param array $data 
-     * @return boolean
+     * @return $this | ClientError | Boolean
      */
     public function copy_file(string $file_id, array $data = [])
     {
         if (!isset($file_id)) {
-            return FALSE;
+            $error = new ClientError();
+            $error->status = '400';
+            $error->message = 'Failed to pass file_id to function';
+            return $error;
         }
         
         $endpoint = 'https://api.box.com/2.0/files/:file_id/copy';
@@ -149,6 +151,10 @@ class File extends AbstractResource implements ArraySerializableInterface
                  * Returns an empty response when the If-None-Match header matches the current etag value of the file. This indicates that the file has not changed since it was last requested.
                  */
                 return null;
+            case 400:
+                /**
+                 * Returns an error if some of the parameters are missing or not valid.
+                 */
             case 403:
                 /**
                  * Returned when the access token provided in the Authorization header is not recognized or not provided.
@@ -165,13 +171,79 @@ class File extends AbstractResource implements ArraySerializableInterface
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->hydrate($this->response);
-                return $error;
+                return $this->error();
         }
     }
     
-    public function update_file() {}
+    /**
+     * Updates a file. This can be used to rename or move a file, create a shared link, or lock a file.
+     * @param string $file_id
+     * @param array $data
+     * @return $this | ClientError
+     */
+    public function update_file(string $file_id, array $data = [])
+    {
+        if (!isset($file_id)) {
+            $error = new ClientError();
+            $error->status = '400';
+            $error->message = 'Failed to pass file_id to function';
+            return $error;
+        }
+        
+        $endpoint = 'https://api.box.com/2.0/files/:file_id';
+        $params = [
+            ':file_id' => $file_id,
+        ];
+        
+        $uri = $this->generate_uri($endpoint, $params);
+        $this->response = $this->put($uri, $data);
+        
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                /**
+                 * Returns a file object.
+                 */
+                $file = new File($this->token);
+                $file->hydrate($this->response);
+                return $file;
+            case 400:
+                /**
+                 * Returned when the new retention time > maximum retention length.
+                 */
+            case 401:
+                /**
+                 * Returned when the access token provided in the Authorization header is not recognized or not provided.
+                 */
+            case 403:
+                /**
+                 * Returned if the user does not have all the permissions to complete the update.
+                 * access_denied_insufficient_permissions returned when the authenticated user does not have access to the destination folder to move the file to.
+                 * Returned when retention time is shorter or equal to current retention timestamp.
+                 * Returned when a file_id that is not under retention is entered.
+                 * Returned when a file that is retained but the disposition action is set to remove_retention
+                 * forbidden_by_policy is returned if copying a folder is forbidden due to information barrier restrictions.
+                 */
+            case 404:
+                /**
+                 * Returned if the file is not found, or the user does not have access to the file.
+                 */
+            case 405:
+                /**
+                 * Returned if the file_id is not in a recognized format.
+                 */
+            case 412:
+                /**
+                 * Returns an error when the If-Match header does not match the current etag value of the file. This indicates that the file has changed since it was last requested.
+                 */
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
+    }
     
     public function delete_file(string $file_id)
     {
@@ -214,9 +286,7 @@ class File extends AbstractResource implements ArraySerializableInterface
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->hydrate($this->response);
-                return $error;
+                return $this->error();
         }
     }
     
@@ -269,9 +339,7 @@ class File extends AbstractResource implements ArraySerializableInterface
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->hydrate($this->getResponse());
-                return $error;
+                return $this->error();
         }
     }
     
@@ -304,9 +372,7 @@ class File extends AbstractResource implements ArraySerializableInterface
                 /**
                  * An unexpected client error.
                  */
-                $error = new ClientError();
-                $error->hydrate($this->getResponse());
-                return $error;
+                return $this->error();
         }
     }
     
@@ -318,4 +384,43 @@ class File extends AbstractResource implements ArraySerializableInterface
         return $this->get_file_information($this->id);
     }
 
+    /**
+     * Utilizes update_file API Call to rename file.
+     * @param string $file_id
+     * @param string $name
+     * @return \comcduarte\Box\API\Resource\File
+     */
+    public function rename_file(string $file_id, string $name)
+    {
+        if (!isset($file_id) || !isset($name)) {
+            throw new ClientErrorException('file_id or name not present in rename_file().');
+        }
+        
+        $data = [
+            'name' => $name,
+        ];
+        
+        return $this->update_file($file_id, $data);
+    }
+    
+    /**
+     * Utilizes update_file API Call to move file to a new folder.
+     * @param string $file_id
+     * @param string $folder_id
+     * @return \comcduarte\Box\API\Resource\File
+     */
+    public function move_file(string $file_id, string $folder_id)
+    {
+        if (!isset($file_id) || !isset($folder_id)) {
+            throw new ClientErrorException('file_id or folder_id not present in move_file().');
+        }
+        
+        $data = [
+            'parent' => [
+                'id' => $folder_id,
+            ],
+        ];
+        
+        return $this->update_file($file_id, $data);
+    }
 }
