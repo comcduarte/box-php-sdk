@@ -1,6 +1,8 @@
 <?php
 namespace Laminas\Box\API;
 
+use Laminas\Box\API\Resource\MetadataQuerySearchResults;
+
 /**
  * 
  * @author Duartec
@@ -108,6 +110,26 @@ class Search extends Resource\AbstractResource
     public $include_recent_shared_links;
     
     /**
+     * example ["extension","created_at","item_status","metadata.enterprise_1234.contracts","metadata.enterprise
+     * By default, this endpoint returns only the most basic info about the items for which the query matches. This attribute can be used to specify a list of additional attributes to return for any item, including its metadata.
+     * This attribute takes a list of item fields, metadata template identifiers, or metadata template field identifiers.
+     * 
+     * For example:
+     * created_by will add the details of the user who created the item to the response.
+     * metadata.<scope>.<templateKey> will return the mini-representation of the metadata instance identified by the scope and templateKey.
+     * metadata.<scope>.<templateKey>.<field> will return all the mini-representation of the metadata instance identified by the scope and templateKey plus the field specified by the field name. Multiple fields for the same scope and templateKey can be defined.
+     * @var array
+     */
+    public $fields;
+    
+    /**
+     * Specifies the template used in the query. Must be in the form scope.templateKey. Not all templates can be used in this field,
+     * most notably the built-in, Box-provided classification templates can not be used in a query.
+     * @var string
+     */
+    public $from; 
+        
+    /**
      * Defines the maximum number of items to return as part of a page of results.
      * example:100 default:30 max:200
      * @var integer
@@ -142,6 +164,14 @@ class Search extends Resource\AbstractResource
      * @var string
      */
     public $query;
+ 
+    /**
+     * example "100"
+     * The value for the argument being used in the metadata search.
+     * The type of this parameter must match the type of the corresponding metadata template field.
+     * @var array
+     */
+    public $query_params;
     
     /**
      * example 123422,23532,3241212
@@ -201,6 +231,7 @@ class Search extends Resource\AbstractResource
      */
     public $updated_at_range;
     
+    
     /**
      * 
      * @return \Laminas\Box\API\Resource\ClientError|\Laminas\Box\API\Resource\SearchResults
@@ -249,7 +280,7 @@ class Search extends Resource\AbstractResource
                 /**
                  * Returns an error when the user does not have access to an item mentioned in the request.
                  * The developer provided a folder ID in ancestor_folder_ids that either does not exist or the user does not have access to.
-                 */
+                 */ 
             default:
                 /**
                  * An unexpected client error.
@@ -258,10 +289,56 @@ class Search extends Resource\AbstractResource
         }
     }
 
-    public function query($query) 
+    public function query_files_by_metadata()
     {
-        $this->query = ['query' => $query];
-        return $this;
+        
+    }
+    
+    /**
+     * Create a search using SQL-like syntax to return items that match specific metadata.
+     * By default, this endpoint returns only the most basic info about the items for which the query matches. 
+     * To get additional fields for each item, including any of the metadata, use the fields attribute in the query.
+     * @return \Laminas\Box\API\Resource\MetadataQuerySearchResults|\Laminas\Box\API\Resource\ClientError
+     */
+    public function query_folders_by_metadata() 
+    {
+        $endpoint = 'https://api.box.com/2.0/metadata_queries/execute_read';
+        $params = [
+        ];
+        
+        $data = [
+            'ancestor_folder_id' => $this->ancestor_folder_ids,
+            'from' => $this->from,
+            'query' => $this->query,
+            'query_params' => $this->query_params,
+        ];
+        
+        $uri = strtr($endpoint, $params);
+        $this->response = $this->post($uri, $data);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                /**
+                 * Returns a list of files and folders that match this metadata query.
+                 */
+                $metadata_query_search_results = new MetadataQuerySearchResults();
+                $metadata_query_search_results->hydrate($this->response);
+                return $metadata_query_search_results;
+            case 400:
+                /**
+                 * Returns an error when the request body is not valid.
+                 * invalid_query - Any of the provided body parameters might be incorrect. This can mean the query is incorrect, as well as some cases where the from value does not represent a valid template.
+                 * unexpected_json_type - An argument from the query string is not present in query_param. For example, query of name = :name requires the query_param to include a value for the name argument, for example { "name": "Box, Inc" }.
+                 */
+            case 404:
+                /**
+                 * Returns an error when a metadata template with the given scope and templateKey can not be found. The error response will include extra details.
+                 * instance_not_found - The template was not found. Please make sure to use the full template scope including the enterprise ID, like enterprise_12345.
+                 */
+            default:
+                return $this->error();
+        }
     }
 
     /**
