@@ -449,9 +449,57 @@ class Folder extends AbstractResource
         
     }
     
-    public function delete_folder()
+    public function delete_folder(string $folder_id = null, bool $recursive = false)
     {
+        if (!isset($folder_id)) {
+            return false;
+        }
         
+        $endpoint = 'https://api.box.com/2.0/folders/:folder_id';
+        $params = [
+            ':folder_id' => $folder_id,
+        ];
+        
+        $uri = strtr($endpoint, $params);
+        $this->response = $this->delete($uri);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 204:
+                /**
+                 * Returns an empty response when the folder is successfully deleted or moved to the trash.
+                 */
+                return null;
+            case 400:
+                /**
+                 * Returns an error if the user makes a bad request.
+                 */
+            case 403:
+                /**
+                 * Returns an error if the user does not have the required access to perform the action.
+                 */
+            case 404:
+                /**
+                 * Returns an error if the folder could not be found, or the authenticated user does not have access to the folder.
+                 */
+            case 409:
+                /**
+                 * operation_blocked_temporary: Returned if the folder is locked due to another move, copy, delete or restore operation in progress.
+                 */
+            case 412:
+                /**
+                 * Returns an error when the If-Match header does not match the current etag value of the folder. This indicates that the folder has changed since it was last requested.
+                 */
+            case 503:
+                /**
+                 * Returns an error when the operation takes longer than 60 seconds. The operation will continue after this response has been returned.
+                 */
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
     }
     
     /**
