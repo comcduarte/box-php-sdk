@@ -77,7 +77,7 @@ class MetadataInstance extends File
      * @param array $data
      * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
      */
-    private function create_metadata_instance(string $endpoint, array $params, $data)
+    private function create_metadata_instance(string $endpoint, array $params, array $data)
     {
         $uri = strtr($endpoint, $params);
         $this->response = $this->post($uri, $data);
@@ -216,8 +216,7 @@ class MetadataInstance extends File
         }
     }
     
-    
-    private function update_metadata_instance(string $endpoint, array $params, $data)
+    private function update_metadata_instance(string $endpoint, array $params, array $data)
     {
         $this->content_type = 'application/json-patch+json';
         
@@ -309,7 +308,7 @@ class MetadataInstance extends File
      * @param string $scope
      * @param string $template_key
      */
-    public function create_metadata_instance_on_file(string $file_id, string $scope, string $template_key, $data)
+    public function create_metadata_instance_on_file(string $file_id, string $scope, string $template_key, array $data)
     {
         if (!isset($file_id) | !isset($template_key)) {
             return FALSE;
@@ -380,7 +379,7 @@ class MetadataInstance extends File
      * @param array $data
      * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
      */
-    public function update_metadata_instance_on_file(string $file_id, string $scope, string $template_key, $data)
+    public function update_metadata_instance_on_file(string $file_id, string $scope, string $template_key, array $data)
     {
         if (!isset($file_id) | !isset($template_key)) {
             return FALSE;
@@ -412,7 +411,7 @@ class MetadataInstance extends File
         return $this->remove_metadata_instance($endpoint, $params);
     }
     
-    public function create_metadata_instance_on_folder(string $folder_id, string $scope, string $template_key, $data)
+    public function create_metadata_instance_on_folder(string $folder_id, string $scope, string $template_key, array $data)
     {
         if (!isset($folder_id) | !isset($template_key)) {
             return FALSE;
@@ -476,7 +475,7 @@ class MetadataInstance extends File
      * @param array $data
      * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
      */
-    public function update_metadata_instance_on_folder(string $folder_id, string $scope, string $template_key, $data)
+    public function update_metadata_instance_on_folder(string $folder_id, string $scope, string $template_key, array $data)
     {
         if (!isset($folder_id) | !isset($template_key)) {
             return FALSE;
