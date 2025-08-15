@@ -1,7 +1,8 @@
 <?php
 namespace comcduarte\Box\API;
 
-use Laminas\Box\API\Resource\MetadataQuerySearchResults;
+use comcduarte\Box\API\Resource\ClientError;
+use comcduarte\Box\API\Resource\MetadataQuerySearchResults;
 
 /**
  * 
@@ -298,7 +299,7 @@ class Search extends Resource\AbstractResource
      * Create a search using SQL-like syntax to return items that match specific metadata.
      * By default, this endpoint returns only the most basic info about the items for which the query matches. 
      * To get additional fields for each item, including any of the metadata, use the fields attribute in the query.
-     * @return \Laminas\Box\API\Resource\MetadataQuerySearchResults|\Laminas\Box\API\Resource\ClientError
+     * @return MetadataQuerySearchResults|ClientError
      */
     public function query_folders_by_metadata() 
     {
