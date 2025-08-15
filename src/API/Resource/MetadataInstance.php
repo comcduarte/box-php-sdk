@@ -1,5 +1,5 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
 
 /**
@@ -75,7 +75,7 @@ class MetadataInstance extends File
      * @param array $params
      * @param string $template_key
      * @param array $data
-     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     * @return \comcduarte\Box\API\Resource\MetadataInstance|\comcduarte\Box\API\Resource\ClientError
      */
     private function create_metadata_instance(string $endpoint, array $params, array $data)
     {
@@ -129,7 +129,7 @@ class MetadataInstance extends File
      * 
      * @param string $endpoint
      * @param array $params
-     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     * @return \comcduarte\Box\API\Resource\MetadataInstance|\comcduarte\Box\API\Resource\ClientError
      */
     private function list_metadata_instances(string $endpoint, array $params)
     {
@@ -166,7 +166,7 @@ class MetadataInstance extends File
      * 
      * @param string $endpoint
      * @param array $params
-     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     * @return \comcduarte\Box\API\Resource\MetadataInstance|\comcduarte\Box\API\Resource\ClientError
      */
     private function get_metadata_instance(string $endpoint, array $params)
     {
@@ -266,7 +266,7 @@ class MetadataInstance extends File
      * 
      * @param string $endpoint
      * @param array $params
-     * @return NULL|\Laminas\Box\API\Resource\ClientError
+     * @return NULL|\comcduarte\Box\API\Resource\ClientError
      */
     private function remove_metadata_instance(string $endpoint, array $params)
     {
@@ -327,7 +327,7 @@ class MetadataInstance extends File
     /**
      * Retrieves all metadata for a given file.
      * @param string $file_id
-     * @return @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     * @return @return \comcduarte\Box\API\Resource\MetadataInstance|\comcduarte\Box\API\Resource\ClientError
      */
     public function list_metadata_instances_on_file(string $file_id)
     {
@@ -349,7 +349,7 @@ class MetadataInstance extends File
      * @param string $file_id
      * @param string $scope
      * @param string $template_key
-     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     * @return \comcduarte\Box\API\Resource\MetadataInstance|\comcduarte\Box\API\Resource\ClientError
      */
     public function get_metadata_instance_on_file(string $file_id, string $scope, string $template_key)
     {
@@ -377,7 +377,7 @@ class MetadataInstance extends File
      * @param string $scope
      * @param string $template_key
      * @param array $data
-     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     * @return \comcduarte\Box\API\Resource\MetadataInstance|\comcduarte\Box\API\Resource\ClientError
      */
     public function update_metadata_instance_on_file(string $file_id, string $scope, string $template_key, array $data)
     {
@@ -446,7 +446,7 @@ class MetadataInstance extends File
      * @param string $folder_id
      * @param string $scope
      * @param string $template_key
-     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     * @return \comcduarte\Box\API\Resource\MetadataInstance|\comcduarte\Box\API\Resource\ClientError
      */
     public function get_metadata_instance_on_folder(string $folder_id, string $scope, string $template_key)
     {
@@ -473,7 +473,7 @@ class MetadataInstance extends File
      * @param string $scope
      * @param string $template_key
      * @param array $data
-     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     * @return \comcduarte\Box\API\Resource\MetadataInstance|\comcduarte\Box\API\Resource\ClientError
      */
     public function update_metadata_instance_on_folder(string $folder_id, string $scope, string $template_key, array $data)
     {

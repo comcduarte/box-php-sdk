@@ -1,18 +1,18 @@
 <?php
-namespace Laminas\Box\API;
+namespace comcduarte\Box\API;
 
 Trait AccessTokenAwareTrait
 {
     /**
      * 
-     * @var \Laminas\Box\API\AccessToken
+     * @var \comcduarte\Box\API\AccessToken
      */
     protected $access_token;
     
     /**
      * 
-     * @param \Laminas\Box\API\AccessToken $access_token
-     * @return \Laminas\Box\API\AccessTokenAwareTrait
+     * @param \comcduarte\Box\API\AccessToken $access_token
+     * @return \comcduarte\Box\API\AccessTokenAwareTrait
      */
     public function setAccessToken(AccessToken $access_token)
     {
@@ -21,7 +21,7 @@ Trait AccessTokenAwareTrait
     }
     
     /**
-     * @return \Laminas\Box\API\AccessToken
+     * @return \comcduarte\Box\API\AccessToken
      */
     public function getAccessToken()
     {

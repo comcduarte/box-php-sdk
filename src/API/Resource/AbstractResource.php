@@ -1,7 +1,7 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
-use Laminas\Box\API\AccessToken;
+use comcduarte\Box\API\AccessToken;
 use Laminas\Http\Client;
 use Laminas\Http\Headers;
 use Laminas\Http\Response;

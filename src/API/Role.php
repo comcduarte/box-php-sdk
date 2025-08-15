@@ -1,5 +1,5 @@
 <?php
-namespace Laminas\Box\API;
+namespace comcduarte\Box\API;
 
 class Role
 {

@@ -1,8 +1,8 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
 
-use Laminas\Box\API\RequestExtraFieldsTrait;
+use comcduarte\Box\API\RequestExtraFieldsTrait;
 
 class Collaboration extends AbstractResource
 {
@@ -54,7 +54,7 @@ class Collaboration extends AbstractResource
             case 200:
                 /**
                  * Returns a collaboration object.
-                 * @var \Laminas\Box\API\Resource\Collaboration $collaboration
+                 * @var \comcduarte\Box\API\Resource\Collaboration $collaboration
                  */
                 $this->hydrate($this->response);
                 return $this;

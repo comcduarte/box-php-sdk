@@ -1,5 +1,5 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
 class MetadataTemplate extends AbstractResource
 {
@@ -40,7 +40,7 @@ class MetadataTemplate extends AbstractResource
      * An ordered list of template fields which are part of the template. 
      * Each field can be a regular text field, date field, number field, as well as a single or multi-select list.
      * 
-     * @var \Laminas\Box\API\Resource\Field[]
+     * @var \comcduarte\Box\API\Resource\Field[]
      */
     public $fields;
     

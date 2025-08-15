@@ -1,11 +1,11 @@
 <?php
-namespace Laminas\Box\API;
+namespace comcduarte\Box\API;
 
 use Firebase\JWT\JWT;
-use Laminas\Box\API\Resource\AbstractResource;
-use Laminas\Box\API\Resource\ClientError;
-use Laminas\Box\API\Resource\HydrationTrait;
-use Laminas\Box\API\Resource\OAuth20Error;
+use comcduarte\Box\API\Resource\AbstractResource;
+use comcduarte\Box\API\Resource\ClientError;
+use comcduarte\Box\API\Resource\HydrationTrait;
+use comcduarte\Box\API\Resource\OAuth20Error;
 use InvalidArgumentException;
 
 class AccessToken extends AbstractResource
@@ -95,7 +95,7 @@ class AccessToken extends AbstractResource
     /**
      * 
      * @param array $parameters
-     * @return \Laminas\Box\API\AccessToken|\Laminas\Box\API\Resource\ClientError
+     * @return \comcduarte\Box\API\AccessToken|\comcduarte\Box\API\Resource\ClientError
      */
     public function request_access_token(array $parameters)
     {

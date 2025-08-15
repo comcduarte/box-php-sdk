@@ -1,7 +1,7 @@
 <?php
-namespace Laminas\Box\API\Form;
+namespace comcduarte\Box\API\Form;
 
-use Laminas\Box\API\Resource\MetadataTemplate;
+use comcduarte\Box\API\Resource\MetadataTemplate;
 use Laminas\Form\Form;
 use Laminas\Form\Element\Csrf;
 use Laminas\Form\Element\Date;

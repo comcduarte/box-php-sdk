@@ -1,5 +1,5 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
 use Laminas\Http\Response;
 use Exception;
@@ -66,7 +66,7 @@ class Upload extends File
      * 
      * @param array $attributes
      * @param string $file
-     * @return \Laminas\Box\API\Resource\Files
+     * @return \comcduarte\Box\API\Resource\Files
      */
     public function upload_file(array $attributes, string $file)
     {
@@ -126,7 +126,7 @@ class Upload extends File
     /**
      * Overrides Parent
      * 
-     * @see \Laminas\Box\API\Resource\AbstractResource::post()
+     * @see \comcduarte\Box\API\Resource\AbstractResource::post()
      */
     protected function post (string $uri, array $data)
     {

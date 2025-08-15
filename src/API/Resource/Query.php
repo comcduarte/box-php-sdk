@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
 class Query
 {

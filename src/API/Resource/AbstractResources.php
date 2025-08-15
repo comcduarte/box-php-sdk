@@ -1,5 +1,5 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
 abstract class AbstractResources implements \Countable
 {
