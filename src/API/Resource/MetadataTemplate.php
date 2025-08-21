@@ -186,12 +186,21 @@ class MetadataTemplate extends AbstractResource
         
         switch ($this->response->getStatusCode())
         {
-            case 200:
+            case 201:
+                /**
+                 * The schema representing the metadata template created.
+                 */
                 $this->hydrate($this->response);
                 return $this;
             case 400:
-                
+                /**
+                 * Returned if the request parameters or body is not valid.
+                 * bad_request when the body does not contain a valid request. In many cases this response will include extra details on what fields are missing.
+                 */
             case 403:
+                /**
+                 * Returned when the user does not have the permission to create the metadata template. This can happen for a few reasons, most commonly when the user does not have (co-)admin permissions, or the application tries to create a template with the global scope.
+                 */
             default:
                 /**
                  * An unexpected client error.
