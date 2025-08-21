@@ -168,7 +168,7 @@ class MetadataTemplate extends AbstractResource
     
     public function create_metadata_template() 
     {
-        $endpoint = 'https://api.box.box/2.0//metadata_templates/schema';
+        $endpoint = 'https://api.box.com/2.0/metadata_templates/schema';
         $params = [
             //-- No Parameters are required. --//
         ];
