@@ -166,7 +166,40 @@ class MetadataTemplate extends AbstractResource
         return $this->list_all_metadata_templates('enterprise');
     }
     
-    public function create_metadata_template() {}
+    public function create_metadata_template() 
+    {
+        $endpoint = 'https://api.box.com/2.0/metadata_templates/schema';
+        $params = [
+            //-- No Parameters are required. --//
+        ];
+        
+        $data = [
+            'scope' => $this->scope,
+            'displayName' => $this->displayName,
+            'fields' => $this->fields,
+            'hidden' => $this->hidden,
+            'templateKey' => $this->templateKey,
+        ];
+        
+        $uri = strtr($endpoint, $params);
+        $this->response = $this->post($uri, $data);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                $this->hydrate($this->response);
+                return $this;
+            case 400:
+                
+            case 403:
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
+    }
+    
     public function update_metadata_template() {}
     public function remove_metadata_template() {}
 }
