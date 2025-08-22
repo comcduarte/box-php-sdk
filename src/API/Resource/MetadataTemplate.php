@@ -8,12 +8,6 @@ use Laminas\Http\Response;
 class MetadataTemplate extends AbstractResource
 {
     /**
-     * 
-     * @var string
-     */
-    protected string $content_type = 'application/json';
-    
-    /**
      * The ID of the metadata template.
      * 
      * @var string
