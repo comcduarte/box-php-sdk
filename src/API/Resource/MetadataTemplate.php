@@ -38,9 +38,9 @@ class MetadataTemplate extends AbstractResource
      * An ordered list of template fields which are part of the template. 
      * Each field can be a regular text field, date field, number field, as well as a single or multi-select list.
      * 
-     * @var Fields
+     * @var array
      */
-    public Fields $fields;
+    public array $fields;
     
     /**
      * Defines if this template is visible in the Box web app UI, or if it is purely intended for usage through the API.
