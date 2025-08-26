@@ -25,7 +25,7 @@ class MetadataTemplate extends AbstractResource
      * 
      * @var boolean
      */
-    public bool $copyInstanceOnItemCopy;
+    public bool $copyInstanceOnItemCopy = false;
     
     /**
      * The display name of the template. This can be seen in the Box web app and mobile apps.
@@ -47,7 +47,7 @@ class MetadataTemplate extends AbstractResource
      * 
      * @var boolean
      */
-    public bool $hidden;
+    public bool $hidden = false;
     
     /**
      * The scope of the metadata template can either be global or enterprise_*. 
@@ -57,7 +57,7 @@ class MetadataTemplate extends AbstractResource
      * 
      * @var string
      */
-    public string $scope;
+    public string $scope = 'enterprise';
     
     /**
      * A unique identifier for the template. This identifier is unique across the scope of the enterprise 
@@ -167,6 +167,7 @@ class MetadataTemplate extends AbstractResource
     }
     
     /**
+     * scope: This value needs to be set to enterprise, as global scopes can not be created by applications.
      * 
      * @return MetadataTemplate|ClientError
      */
