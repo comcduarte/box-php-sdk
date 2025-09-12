@@ -12,7 +12,7 @@ class MetadataTemplate extends AbstractResource
      * 
      * @var string
      */
-    public string $id = null;
+    public string $id = "";
     
     /**
      * Value is always metadata_template.
