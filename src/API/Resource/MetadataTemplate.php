@@ -32,7 +32,7 @@ class MetadataTemplate extends AbstractResource
      * 
      * @var string
      */
-    public string $displayName = null;
+    public string $displayName = "";
     
     /**
      * An ordered list of template fields which are part of the template. 
@@ -40,7 +40,7 @@ class MetadataTemplate extends AbstractResource
      * 
      * @var array
      */
-    public array $fields = null;
+    public array $fields = [];
     
     /**
      * Defines if this template is visible in the Box web app UI, or if it is purely intended for usage through the API.
@@ -65,7 +65,7 @@ class MetadataTemplate extends AbstractResource
      * 
      * @var string
      */
-    public string $templateKey = null;
+    public string $templateKey = "";
     
     public function find_metadata_template_by_instance_id() {}
     
