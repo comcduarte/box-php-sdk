@@ -12,7 +12,7 @@ class MetadataTemplate extends AbstractResource
      * 
      * @var string
      */
-    public string $id;
+    public string $id = null;
     
     /**
      * Value is always metadata_template.
@@ -32,7 +32,7 @@ class MetadataTemplate extends AbstractResource
      * 
      * @var string
      */
-    public string $displayName;
+    public string $displayName = null;
     
     /**
      * An ordered list of template fields which are part of the template. 
@@ -40,7 +40,7 @@ class MetadataTemplate extends AbstractResource
      * 
      * @var array
      */
-    public array $fields;
+    public array $fields = null;
     
     /**
      * Defines if this template is visible in the Box web app UI, or if it is purely intended for usage through the API.
@@ -65,7 +65,7 @@ class MetadataTemplate extends AbstractResource
      * 
      * @var string
      */
-    public string $templateKey;
+    public string $templateKey = null;
     
     public function find_metadata_template_by_instance_id() {}
     
@@ -214,7 +214,52 @@ class MetadataTemplate extends AbstractResource
         }
     }
     
-    public function update_metadata_template() {}
+    public function update_metadata_template(string $scope, string $template_key): MetadataTemplate | ClientError 
+    {
+        $endpoint = 'https://api.box.com/2.0/metadata_templates/:scope/:template_key/schema';
+        $params = [
+            ':scope' => $scope,
+            ':template_key' => $template_key
+        ];
+        
+        $data = [
+//             "op": "editField",
+//             "fieldKey": "category",
+//             "data": {
+//              "displayName": "Customer Group"
+//             }
+        
+        ];
+        
+        $uri = strtr($endpoint, $params);
+        $this->response = $this->put($uri, $data);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                /**
+                 * Returns the updated metadata template, with the custom template data included.
+                 */
+                return $this;
+            case 400:
+                /**
+                 * The request body does not contain a valid metadata schema.
+                 */
+            case 403:
+                /**
+                 * The request body contains a scope that the user is not allowed to create templates for.
+                 */
+            case 404:
+                /**
+                 * The requested template could not be found.
+                 */
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
+    }
     
     /**
      * 
