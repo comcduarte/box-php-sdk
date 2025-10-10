@@ -439,15 +439,90 @@ class Folder extends AbstractResource
         }
     }
     
-    public function copy_folder()
+    public function copy_folder(string $folder_id, string $parent)
     {
         
     }
     
-    public function update_folder()
+    public function move_folder(string $folder_id, string $parent)
     {
         
     }
+    
+    public function update_folder(string $folder_id, array $data): Folder|ClientError
+    {
+        if (!isset($folder_id)) {
+            $error = new ClientError();
+            $error->status = '404';
+            return $error;
+        }
+        
+        $endpoint = 'https://api.box.com/2.0/folders/:folder_id';
+        $params = [
+            ':folder_id' => $folder_id,
+        ];
+        
+        $uri = $this->generate_uri($endpoint, $params);
+        $this->response = $this->put($uri, $data);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                /**
+                 * Returns a folder object for the updated folder
+                 * 
+                 * Not all available fields are returned by default. Use the fields query parameter to 
+                 * explicitly request any specific fields.
+                 * 
+                 * If the user is moving folders with a large number of items in all of their descendants, 
+                 * the call will be run asynchronously. If the operation is not completed within 10 minutes, 
+                 * the user will receive a 200 OK response, and the operation will continue running.
+                 */
+                $folder = new Folder($this->token);
+                $folder->hydrate($this->response);
+                return $folder;
+            case 400:
+                /**
+                 * Returns an error if some of the parameters are missing or not valid, or if a folder lock is preventing a move operation.
+                 *     bad_request when a parameter is missing or incorrect. This error also happens when a password is set for a shared link with an access type of open.
+                 *     item_name_too_long when the folder name is too long.
+                 *     item_name_invalid when the folder name contains non-valid characters.
+
+                 */
+            case 403:
+                /**
+                 * Returns an error if the user does not have the required access to perform the action.
+                 *    access_denied_insufficient_permissions: Returned when the user does not have access to the folder or parent folder, or if the folder is being moved and a folder lock has been applied to prevent such operations.
+                 *     insufficient_scope: Returned an error if the application does not have the right scope to update folders. Make sure your application has been configured to read and write all files and folders stored in Box.
+                 *     forbidden: Returned when the user is not allowed to perform this action for other users. This can include trying to create a Shared Link with a company access level on a free account.
+                 *     forbidden_by_policy: Returned if copying a folder is forbidden due to information barrier restrictions.
+                 * Returns an error if there are too many actions in the request body.
+                 *     operation_limit_exceeded: Returned when the user passes any parameters in addition to the parent.id in the request body. The calls to this endpoint have to be split up. The first call needs to include only the parent.id, the next call can include other parameters.
+                 */
+            case 404:
+                /**
+                 * operation_blocked_temporary: Returned if either of the destination or source folders is locked due to another move, copy, delete or restore operation in progress.
+                 * The operation can be retried at a later point.
+                 * item_name_in_use: Returned if a folder with the name already exists in the parent folder.
+                 */
+            case 412:
+                /**
+                 * Returns an error when the If-Match header does not match the current etag value of the folder. This indicates that the folder has changed since it was last requested.
+                 */
+            case 503:
+                /**
+                 * Returns an error when the operation takes longer than 600 seconds. The operation will continue after this response has been returned.
+                 */
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
+        
+    }
+    
+    
     
     public function delete_folder(string $folder_id = null, bool $recursive = false)
     {
@@ -459,6 +534,14 @@ class Folder extends AbstractResource
         $params = [
             ':folder_id' => $folder_id,
         ];
+        
+        if (isset($recursive)) {
+            $endpoint .= '?:query';
+            $params[':query'] = '';
+            
+            $params[':query'] .= sprintf('%s=%s', 'recursive', 'true');
+            
+        }
         
         $uri = strtr($endpoint, $params);
         $this->response = $this->delete($uri);
