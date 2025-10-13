@@ -2,6 +2,8 @@
 namespace comcduarte\Box\API\Resource;
 
 
+use Laminas\Stdlib\ArraySerializableInterface;
+
 /**
  * 
  * @author Christopher Duarte
@@ -9,8 +11,10 @@ namespace comcduarte\Box\API\Resource;
  * 
  * POST https://api.box.com/2.0/files/[:file_id]/metadata/[:scope]/[:template_key]
  */
-class MetadataInstance extends File
+class MetadataInstance extends AbstractResource implements ArraySerializableInterface
 {
+    use HydrationTrait;
+    
     public const API_FUNC = '/metadata/';
     
     /**
@@ -195,6 +199,7 @@ class MetadataInstance extends File
                 }
                 
                 $metadata_instance->hydrate($data);
+                $this->hydrate($data);
                 return $metadata_instance;
             case 403:
                 /**
