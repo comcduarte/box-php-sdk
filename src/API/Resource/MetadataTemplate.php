@@ -91,6 +91,27 @@ class MetadataTemplate extends AbstractResource
         ];
         $uri = strtr($endpoint, $params);
         $this->response = $this->get($uri);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                /**
+                 * Returns the metadata template matching the scope and template name.
+                 */
+                $this->hydrate($this->response);
+                return $this;
+            case 400:
+                /**
+                 * Returned if any of the request parameters are not valid.
+                 * bad_request: Often returned when the scope of the template is not recognised. Please make sure to use either enterprise or global as the scope value.
+                 */
+            case 404:
+                /**
+                 * Returned when a template with the given scope and template_key can not be found.
+                 */
+            default:
+                return $this->error();
+        }
     }
     
     /**
