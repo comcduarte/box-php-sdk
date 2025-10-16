@@ -62,7 +62,7 @@ abstract class AbstractResource
      */
     protected $uri;
     
-    protected $version = 2024.0;
+    public string $version = '2024.0';
     
     public function __construct($access_token = null)
     {
