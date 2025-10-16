@@ -3,6 +3,8 @@ namespace comcduarte\Box\API\Resource;
 
 abstract class AbstractResources implements \Countable
 {
+    use HydrationTrait;
+    
     /**
      * Array of Resources
      * @var array
