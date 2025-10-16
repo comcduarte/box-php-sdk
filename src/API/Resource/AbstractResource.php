@@ -62,6 +62,8 @@ abstract class AbstractResource
      */
     protected $uri;
     
+    protected $version = 2024.0;
+    
     public function __construct($access_token = null)
     {
         if ($this->requires_authorization) {
@@ -80,8 +82,7 @@ abstract class AbstractResource
     
     protected function delete(string $uri)
     {
-        $this->add_authorization();
-        $this->add_content_type();
+        $this->add_headers();
         
         $client = new Client();
         $client->setOptions([
@@ -99,7 +100,7 @@ abstract class AbstractResource
     
     protected function get(string $uri)
     {
-        $this->add_authorization();
+        $this->add_headers();
         
         $client = new Client();
         $client->setOptions([
@@ -121,8 +122,7 @@ abstract class AbstractResource
      */
     protected function send(string $uri, array $data, string $method)
     {
-        $this->add_authorization();
-        $this->add_content_type();
+        $this->add_headers();
         
         $client = new Client();
         $client->setOptions([
@@ -199,6 +199,23 @@ abstract class AbstractResource
             $this->headers->addHeaderLine('Content-Type', $this->content_type);
         }
         return $this;
+    }
+    
+    private function add_version()
+    {
+        if (isset($this->version)) {
+            $this->headers->addHeaderLine(sprintf('box-version: %s', $this->version));
+        }
+        return $this;
+    }
+    
+    private function add_headers()
+    {
+        $this
+            ->add_authorization()
+            ->add_content_type()
+            ->add_version();
+        return $this;        
     }
     
     public function getResponse()
