@@ -94,7 +94,7 @@ class BoxDocGenTemplate extends AbstractResource
         }
     }
 
-    public function delete_box_doc_gen_template(string $template_id): void|ClientError
+    public function delete_box_doc_gen_template(string $template_id): bool|ClientError
     {
         $endpoint = 'https://api.box.com/2.0/docgen_templates/:template_id';
         $params = [
@@ -110,7 +110,7 @@ class BoxDocGenTemplate extends AbstractResource
                 /**
                  * Returns an empty response when a file is no longer marked as a Box Doc Gen template.
                  */
-                return;
+                return true;
             case 400:
                 /**
                  * The server cannot or will not process the request due to an apparent client error.
