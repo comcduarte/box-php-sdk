@@ -31,7 +31,9 @@ class BoxDocGenTemplate extends AbstractResource
                 /**
                  * Returns a collection of templates.
                  */
-                return;
+                $templates = new BoxDocGenTemplates();
+                $templates->hydrate($this->response);
+                return $templates;
             case 400:
                 /**
                  * Returned if the user has passed in a malformed marker or limit value.
