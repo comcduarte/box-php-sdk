@@ -15,6 +15,8 @@ class BoxDocGenTemplate extends AbstractResource
     
     public string $file_name = '';
     
+    protected float $version = 2025.0;
+    
     public function list_box_doc_gen_templates(): BoxDocGenTemplates|ClientError
     {
         $endpoint = 'https://api.box.com/2.0/docgen_templates';
