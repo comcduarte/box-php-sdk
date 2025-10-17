@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace comcduarte\Box\API\Resource\DocGen;
 
 use comcduarte\Box\API\Resource\AbstractResource;
-use comcduarte\Box\API\Resource\File;
 use comcduarte\Box\API\Resource\ClientError;
+use comcduarte\Box\API\Resource\File;
 
 class BoxDocGenTemplate extends AbstractResource
 {
@@ -103,6 +103,8 @@ class BoxDocGenTemplate extends AbstractResource
             ':template_id' => $template_id,
         ];
         
+        
+        
         $uri = strtr($endpoint, $params);
         $this->response = $this->delete($uri);
         
@@ -131,6 +133,84 @@ class BoxDocGenTemplate extends AbstractResource
                  */
             default:
                 return $this->error();
+        }
+    }
+
+    public function get_box_doc_gen_template(string $template_id): BoxDocGenTemplate|ClientError
+    {
+        $endpoint = 'https://api.box.com/2.0/docgen_templates/:template_id';
+        $params = [
+            ':template_id' => $template_id,
+        ];
+        
+        $uri = $this->generate_uri($endpoint, $params);
+        $this->response = $this->get($uri);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                /**
+                 * Returns a template.
+                 */
+                $this->hydrate($this->response);
+                return $this;
+            case 401:
+                /**
+                 * Returned when the access token provided in the Authorization header is not recognized or not provided.
+                 */
+            case 404:
+                /**
+                 * Returned if the template is not found or the user does not have access to the associated template.
+                 */
+            default:
+                return $this->error();
+        }
+    }
+
+    public function list_all_box_doc_gen_template_tags(string $template_id): BoxDocGenTemplateTags|BoxDocGenTagsProcessingMessage|ClientError
+    {
+        $endpoint = 'https://api.box.com/2.0/docgen_templates/:template_id/tags';
+        $params = [
+            ':template_id' => $template_id,
+        ];
+        
+        $uri = strtr($endpoint, $params);
+        $this->response = $this->get($uri);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                /**
+                 * A list of document generation template tags.
+                 */
+                $tags = new BoxDocGenTemplateTags();
+                $tags->hydrate($this->response);
+                return $tags;
+            case 202:
+                /**
+                 * Processing tags for the file.
+                 */
+                $message = new BoxDocGenTagsProcessingMessage();
+                return $message;
+            case 400:
+                /**
+                 * Returned if the user has passed in a malformed marker or limit value.
+                 */
+            case 403:
+                /**
+                 * The client does not have access rights to the content or resource requested.
+                 */
+            case 404:
+                /**
+                 * The requested resource could not be found but may be available in the future.
+                 */
+            case 429:
+                /**
+                 * The user has sent too many requests in a given amount of time.
+                 */
+            default:
+                return $this->error();
+                
         }
     }
 }
