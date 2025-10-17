@@ -71,7 +71,7 @@ class BoxDocGenTemplate extends AbstractResource
         
         switch ($this->response->getStatusCode())
         {
-            case 200:
+            case 201:
                 /**
                  * The file which has now been marked as a Box Doc Gen template.
                  */
