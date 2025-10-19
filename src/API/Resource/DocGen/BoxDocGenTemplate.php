@@ -6,12 +6,13 @@ namespace comcduarte\Box\API\Resource\DocGen;
 use comcduarte\Box\API\Resource\AbstractResource;
 use comcduarte\Box\API\Resource\ClientError;
 use comcduarte\Box\API\Resource\File;
+use comcduarte\Box\API\Enum\ResourceType;
 
 class BoxDocGenTemplate extends AbstractResource
 {
     public string $id = '';
     
-    public string $type = 'file';
+    public ResourceType $type = 'file';
     
     public string $file_name = '';
     
