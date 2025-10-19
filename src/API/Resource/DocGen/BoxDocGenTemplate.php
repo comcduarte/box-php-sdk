@@ -136,7 +136,7 @@ class BoxDocGenTemplate extends AbstractResource
         }
     }
 
-    public function get_box_doc_gen_template(string $template_id): BoxDocGenTemplate|ClientError
+    public function get_box_doc_gen_template(string $template_id): self|ClientError
     {
         $endpoint = 'https://api.box.com/2.0/docgen_templates/:template_id';
         $params = [

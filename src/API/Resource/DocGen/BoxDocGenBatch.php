@@ -2,9 +2,8 @@
 declare(strict_types = 1);
 namespace comcduarte\Box\API\Resource\DocGen;
 
-use comcduarte\Box\API\Resource\BaseResourceTrait;
+use comcduarte\Box\API\Resource\BaseResource;
 
-class BoxDocGenBatch
+class BoxDocGenBatch extends BaseResource
 {
-    use BaseResourceTrait;
 }

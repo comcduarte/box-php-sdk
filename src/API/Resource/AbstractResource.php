@@ -8,7 +8,7 @@ use Laminas\Http\Response;
 use Laminas\Http\Client\Adapter\Curl;
 use Laminas\Hydrator\ArraySerializableHydrator;
 
-abstract class AbstractResource
+abstract class AbstractResource extends BaseResource
 {
     /**#@+
      *
