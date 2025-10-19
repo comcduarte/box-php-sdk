@@ -12,7 +12,7 @@ class BoxDocGenTemplate extends AbstractResource
 {
     public string $id = '';
     
-    public ResourceType $type = 'file';
+    public ResourceType $type = ResourceType::File;
     
     public string $file_name = '';
     
