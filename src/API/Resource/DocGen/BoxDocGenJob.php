@@ -1,6 +1,5 @@
 <?php
-declare(strict_types=1);
-
+declare(strict_types = 1);
 namespace comcduarte\Box\API\Resource\DocGen;
 
 use comcduarte\Box\API\Enum\ResourceType;
@@ -11,32 +10,41 @@ use comcduarte\Box\API\Resource\ClientError;
 
 class BoxDocGenJob extends AbstractResource
 {
+
     public BoxDocGenBatch $batch;
+
     public string $create_at;
+
     public BaseResource $create_by;
+
     public BaseResource $enterprise;
+
     public BaseResource $output_file;
+
     public BaseResource $output_file_version;
+
     public ResourceType $output_type;
+
     public string $source;
+
     public StatusType $status;
+
     public BaseResource $template_file;
+
     public BaseResource $template_file_version;
-    
-    
-    
+
+    public string $version = '2025.0';
+
     public function list_all_doc_gen_jobs(): BoxDocGenJobs|ClientError
     {
         $endpoint = 'https://api.box.com/2.0/docgen_jobs';
-        $params = [
-            //-- No Parameters Required --//
+        $params = [ // -- No Parameters Required --//
         ];
-        
+
         $uri = $this->generate_uri($endpoint, $params);
         $this->response = $this->get($uri);
-        
-        switch ($this->response->getStatusCode())
-        {
+
+        switch ($this->response->getStatusCode()) {
             case 200:
                 /**
                  * A list of Box Doc Gen jobs.
@@ -45,17 +53,17 @@ class BoxDocGenJob extends AbstractResource
                 $jobs->hydrate($this->response);
                 return $jobs;
             case 400:
-                /**
-                 * Returned if the user has passed in a malformed marker or limit value.
-                 */
+            /**
+             * Returned if the user has passed in a malformed marker or limit value.
+             */
             case 403:
-                /**
-                 * The client does not have access rights to the content or resource requested.
-                 */
+            /**
+             * The client does not have access rights to the content or resource requested.
+             */
             case 429:
-                /**
-                 * The user has sent too many requests in a given amount of time.
-                 */
+            /**
+             * The user has sent too many requests in a given amount of time.
+             */
             default:
                 /**
                  * An unexpected client error.
@@ -68,14 +76,13 @@ class BoxDocGenJob extends AbstractResource
     {
         $endpoint = 'https://api.box.com/2.0/docgen_jobs/:job_id';
         $params = [
-            ':job_id' => $job_id,
+            ':job_id' => $job_id
         ];
-        
+
         $uri = $this->generate_uri($endpoint, $params);
         $this->response = $this->get($uri);
-        
-        switch ($this->response->getStatusCode())
-        {
+
+        switch ($this->response->getStatusCode()) {
             case 200:
                 /**
                  * Details of the Box Doc Gen job.
@@ -83,52 +90,46 @@ class BoxDocGenJob extends AbstractResource
                 $this->hydrate($this->response);
                 return $this;
             case 403:
-                /**
-                 * The client does not have access rights to the content or resource requested.
-                 */
+            /**
+             * The client does not have access rights to the content or resource requested.
+             */
             case 404:
-                /**
-                 * Returned if the job is not found or the user does not have access to the associated job.
-                 */
+            /**
+             * Returned if the job is not found or the user does not have access to the associated job.
+             */
             case 429:
-                /**
-                 * The user has sent too many requests in a given amount of time.
-                 */
+            /**
+             * The user has sent too many requests in a given amount of time.
+             */
             default:
                 return $this->error();
         }
     }
 
     /**
-     * 
+     *
      * @param BaseResource $destination_folder
      * @param array $document_generation_data
      * @param BaseResource $file
-     * A Box Doc Gen template that is used to generate the document.
+     *            A Box Doc Gen template that is used to generate the document.
      */
-    public function generate_document(
-        BaseResource $destination_folder, 
-        array $document_generation_data,
-        BaseResource $file,
-        string $input_source,
-        string $output_type)
+    public function generate_document(BaseResource $destination_folder, array $document_generation_data, BaseResource $file, string $input_source, string $output_type)
     {
         $endpoint = 'https://api.box.com/2.0/docgen_batches';
         $params = [];
-        
+
         $data = [
             'destination_folder' => $destination_folder,
             'document_generation_data' => $document_generation_data,
             'file' => $file,
             'input_source' => $input_source,
-            'output_type' => $output_type,
+            'output_type' => $output_type
         ];
-        
+
         $uri = $this->generate_uri($endpoint, $params);
         $this->response = $this->post($uri, $data);
-        
-        switch ($this->response->getStatusCode())
-        {
+
+        switch ($this->response->getStatusCode()) {
             case 202:
                 /**
                  * Returns the created batch ID (Base)
@@ -137,13 +138,13 @@ class BoxDocGenJob extends AbstractResource
                 $batch->hydrate($this->response);
                 return $batch;
             case 403:
-                /**
-                 * The client does not have access rights to the content or resource requested.
-                 */
+            /**
+             * The client does not have access rights to the content or resource requested.
+             */
             case 429:
-                /**
-                 * The user has sent too many requests in a given amount of time.
-                 */
+            /**
+             * The user has sent too many requests in a given amount of time.
+             */
             default:
                 return $this->error();
         }
