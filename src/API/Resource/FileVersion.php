@@ -2,11 +2,13 @@
 declare(strict_types = 1);
 namespace comcduarte\Box\API\Resource;
 
+use comcduarte\Box\API\Enum\ResourceType;
+
 class FileVersion extends AbstractResource
 {
     public string $id;
     
-    public string $type = 'file_version';
+    public ResourceType $type = ResourceType::File_Version;
     
     public string $created_at;
     

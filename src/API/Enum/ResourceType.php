@@ -8,5 +8,5 @@ Enum ResourceType: string
 {
     case File = 'file';
     case Folder = 'folder';
-    
+    case File_Version = 'file_version';
 }
