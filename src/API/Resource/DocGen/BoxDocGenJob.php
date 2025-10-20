@@ -110,7 +110,6 @@ class BoxDocGenJob extends AbstractResource
         BaseResource $destination_folder, 
         array $document_generation_data,
         BaseResource $file,
-        BaseResource $file_version,
         string $input_source,
         string $output_type)
     {
@@ -121,7 +120,6 @@ class BoxDocGenJob extends AbstractResource
             'destination_folder' => $destination_folder,
             'document_generation_data' => $document_generation_data,
             'file' => $file,
-            'file_version' => $file_version,
             'input_source' => $input_source,
             'output_type' => $output_type,
         ];
