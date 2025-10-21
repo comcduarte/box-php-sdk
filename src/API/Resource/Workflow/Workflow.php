@@ -9,10 +9,11 @@ use comcduarte\Box\API\Resource\AbstractResource;
 use comcduarte\Box\API\Resource\ClientError;
 use comcduarte\Box\API\Resource\Query;
 use comcduarte\Box\API\Resource\Workflows;
+use comcduarte\Box\API\Enum\ResourceType;
 
 class Workflow extends AbstractResource
 {
-    public string $type = 'workflow';
+    public ResourceType $type = ResourceType::Workflow;
     public string $description;
     
     /**
