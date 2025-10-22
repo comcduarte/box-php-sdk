@@ -365,7 +365,7 @@ class Comment extends AbstractResource
             $setter   = sprintf('set%s', ucfirst($property));
             $callable = [$this, $setter];
             if (! is_callable($callable)) {
-                throw \BadMethodCallException(
+                throw new \BadMethodCallException(
                     'Missing setter method for property %s; expected setter %s',
                     $property, $setter);
             }
