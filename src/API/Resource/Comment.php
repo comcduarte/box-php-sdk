@@ -62,7 +62,7 @@ class Comment extends AbstractResource
                 /**
                  * An unexpected client error.
                  */
-                if (is_null($this->response->getContent())) {
+                if (empty($this->response->getContent())) {
                     $this->response->setContent(json_encode('No Content.'));
                 }
                 return $this->error();
