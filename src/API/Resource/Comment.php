@@ -32,7 +32,7 @@ class Comment extends AbstractResource
             throw new ClientErrorException('file_id not set.');
         }
         
-        $endpoint = 'https://api.box.com/2.0;/files/:file_id/comments';
+        $endpoint = 'https://api.box.com/2.0/files/:file_id/comments';
         $params = [
             ':file_id' => $file_id,
         ];
@@ -62,9 +62,6 @@ class Comment extends AbstractResource
                 /**
                  * An unexpected client error.
                  */
-                if (empty($this->response->getContent())) {
-                    $this->response->setContent(json_encode('No Content.'));
-                }
                 return $this->error();
         }
     }
