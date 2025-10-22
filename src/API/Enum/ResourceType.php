@@ -10,4 +10,5 @@ Enum ResourceType: string
     case Folder = 'folder';
     case File_Version = 'file_version';
     case Workflow = 'workflow';
+    case Comment = 'comment';
 }
