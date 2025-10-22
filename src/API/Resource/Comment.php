@@ -26,6 +26,150 @@ class Comment extends AbstractResource
 
     public string $tagged_message;
     
+    /**
+     * @return string
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return \comcduarte\Box\API\Enum\ResourceType
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCreated_at()
+    {
+        return $this->created_at;
+    }
+
+    /**
+     * @return \comcduarte\Box\API\Resource\User
+     */
+    public function getCreated_by()
+    {
+        return $this->created_by;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isIs_reply_comment()
+    {
+        return $this->is_reply_comment;
+    }
+
+    /**
+     * @return \comcduarte\Box\API\Resource\BaseResource
+     */
+    public function getItem()
+    {
+        return $this->item;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
+    /**
+     * @return string
+     */
+    public function getModified_at()
+    {
+        return $this->modified_at;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTagged_message()
+    {
+        return $this->tagged_message;
+    }
+
+    /**
+     * @param string $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @param \comcduarte\Box\API\Enum\ResourceType $type
+     */
+    public function setType($type)
+    {
+        $this->type = ResourceType::from($type);
+    }
+
+    /**
+     * @param string $created_at
+     */
+    public function setCreated_at($created_at)
+    {
+        $this->created_at = $created_at;
+    }
+
+    /**
+     * @param \comcduarte\Box\API\Resource\User $created_by
+     */
+    public function setCreated_by($created_by)
+    {
+        $this->created_by = $created_by;
+    }
+
+    /**
+     * @param boolean $is_reply_comment
+     */
+    public function setIs_reply_comment($is_reply_comment)
+    {
+        $this->is_reply_comment = $is_reply_comment;
+    }
+
+    /**
+     * @param \comcduarte\Box\API\Resource\BaseResource $item
+     */
+    public function setItem($item)
+    {
+        $this->item = $item;
+    }
+
+    /**
+     * @param string $message
+     */
+    public function setMessage($message)
+    {
+        $this->message = $message;
+    }
+
+    /**
+     * @param string $modified_at
+     */
+    public function setModified_at($modified_at)
+    {
+        $this->modified_at = $modified_at;
+    }
+
+    /**
+     * @param string $tagged_message
+     */
+    public function setTagged_message($tagged_message)
+    {
+        $this->tagged_message = $tagged_message;
+    }
+
     public function list_file_comments(string $file_id, Query $query = null): Comments|ClientError
     {
         if (!isset($file_id)) {
@@ -210,4 +354,26 @@ class Comment extends AbstractResource
                 return $this->error();
         }
     }
+
+    public function exchangeArray(array $data): self
+    {
+        $instance = clone $this;
+        
+        /** @psalm-suppress MixedAssignment */
+        foreach ($data as $property => $value) {
+            $property = lcfirst(str_replace('_', '', ucwords($property, '_')));
+            $setter   = sprintf('set%s', ucfirst($property));
+            $callable = [$this, $setter];
+            if (! is_callable($callable)) {
+                throw \BadMethodCallException(
+                    'Missing setter method for property %s; expected setter %s',
+                    $property, $setter);
+            }
+            
+            call_user_func($callable, $value);
+        }
+        
+        return $instance;
+    }
+    
 }
