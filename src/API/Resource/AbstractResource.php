@@ -246,7 +246,7 @@ abstract class AbstractResource extends BaseResource
         return strtr($endpoint, $params);
     }
     
-    public function exchangeArray(array $data): self
+    public function exchangeArray(array $data)
     {
         $instance = clone $this;
         
