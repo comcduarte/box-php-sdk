@@ -246,13 +246,22 @@ abstract class AbstractResource extends BaseResource
         return strtr($endpoint, $params);
     }
     
-    public function exchangeArray(array $array)
+    public function exchangeArray(array $data): self
     {
-        foreach (array_keys(get_object_vars($this)) as $var) {
-            if (!empty($array[$var])) {
-                $this->$var = $array[$var];
+        $instance = clone $this;
+        
+        /** @psalm-suppress MixedAssignment */
+        foreach ($data as $property => $value) {
+            $property = lcfirst(str_replace('_', '', ucwords($property, '_')));
+            $setter   = sprintf('set%s', ucfirst($property));
+            $callable = [$this, $setter];
+            if (! is_callable($callable)) {
+                $this->$property = $value;
+            } else {
+                call_user_func($callable, $value);
             }
         }
+        return $instance;
     }
     
     public function getArrayCopy()
