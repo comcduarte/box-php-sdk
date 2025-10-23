@@ -143,7 +143,9 @@ class Comment extends AbstractResource
      */
     public function setItem($item)
     {
-        $this->item = $item;
+        $object = new BaseResource();
+        $object->hydrate($item);
+        $this->item = $object;
     }
 
     /**
@@ -366,9 +368,11 @@ class Comment extends AbstractResource
             $callable = [$this, $setter];
             if (! is_callable($callable)) {
                 $this->$property = $value;
+            } else {
+                call_user_func($callable, $value);
             }
             
-            call_user_func($callable, $value);
+            
         }
         
         return $instance;
