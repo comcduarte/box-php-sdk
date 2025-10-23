@@ -14,7 +14,7 @@ class Folder extends AbstractResource
      *
      * @var string
      */
-    protected string $content_type = 'application/json';
+    protected $content_type = 'application/json';
     
     /**
      * 
