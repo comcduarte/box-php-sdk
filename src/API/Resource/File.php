@@ -1,15 +1,15 @@
 <?php
 namespace comcduarte\Box\API\Resource;
 
-use comcduarte\Box\API\RepresentationsTrait;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArraySerializableInterface;
-use comcduarte\Box\API\Exception\ClientErrorException;
+use comcduarte\Box\API\RepresentationsTrait;
 use comcduarte\Box\API\Enum\ResourceType;
+use comcduarte\Box\API\Exception\ClientErrorException;
+use stdClass;
 
 class File extends AbstractResource implements ArraySerializableInterface
 {
-    use HydrationTrait;
     use RepresentationsTrait;
 
     /**
@@ -98,12 +98,6 @@ class File extends AbstractResource implements ArraySerializableInterface
     public \stdClass $permissions;
 
     public string $purged_at;
-
-    /**
-     * @todo Convert into a Resource
-     * @var array
-     */
-    public array $representations;
 
     public string $sequence_id;
 

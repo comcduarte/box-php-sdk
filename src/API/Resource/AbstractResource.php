@@ -252,18 +252,22 @@ abstract class AbstractResource extends BaseResource
         
         /** @psalm-suppress MixedAssignment */
         foreach ($data as $property => $value) {
+            $original_property = $property;
             $property = lcfirst(str_replace('_', '', ucwords($property, '_')));
             $setter   = sprintf('set%s', ucfirst($property));
             $callable = [$this, $setter];
-            if (! is_callable($callable)) {
-                $this->$property = $value;
+            if (! is_callable($callable) ) {
+                if (!empty($value)) {
+                    $this->$original_property = $value;
+                }
+                continue;
             } else {
                 call_user_func($callable, $value);
             }
         }
         return $instance;
     }
-    
+
     public function getArrayCopy()
     {
         $data = [];

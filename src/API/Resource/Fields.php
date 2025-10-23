@@ -5,5 +5,4 @@ namespace comcduarte\Box\API\Resource;
 
 class Fields extends AbstractResources
 {
-    use HydrationTrait;
 }

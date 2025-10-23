@@ -10,8 +10,6 @@ use InvalidArgumentException;
 
 class AccessToken extends AbstractResource
 {
-    use HydrationTrait;
-    
     const API_URL = 'https://api.box.com';
     
     const REQUEST_URI = '/oauth2/token';

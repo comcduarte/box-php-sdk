@@ -177,7 +177,7 @@ class Folder extends AbstractResource
      * 
      * @var object
      */
-    public Folders $path_collection;
+    public Items $path_collection;
     
     /**
      * 
@@ -243,6 +243,68 @@ class Folder extends AbstractResource
      * @var object
      */
     public \stdClass $watermark_info;
+    
+    public function getCreatedBy()
+    {
+        return $this->created_by;
+    }
+    
+    public function getParent()
+    {
+        return $this->parent;
+    }
+    
+    public function getPathCollection()
+    {
+        return $this->path_collection;
+    }
+    
+    public function setCreatedBy($created_by)
+    {
+        $user = new User($this->token);
+        $user->hydrate($created_by);
+        $this->created_by = $user;
+        return $this;
+    }
+    
+    public function setItemCollection($item_collection)
+    {
+        $this->item_collection = new Items();
+        $this->item_collection->hydrate($item_collection);
+        return $this;
+    }
+    
+    public function setModifiedBy($modified_by)
+    {
+        $user = new User($this->token);
+        $user->hydrate($modified_by);
+        $this->modified_by = $user;
+        return $this;
+    }
+    
+    public function setOwnedBy($owned_by)
+    {
+        $user = new User($this->token);
+        $user->hydrate($owned_by);
+        $this->owned_by = $user;
+        return $this;
+    }
+    
+    public function setParent($parent)
+    {
+        $folder = new Folder($this->token);
+        $folder->hydrate($parent);
+        $this->parent = $folder;
+        return $this;
+    }
+    
+    public function setPathCollection($path_collection)
+    {
+        $items = new Items();
+        $items->hydrate($path_collection);
+        $this->path_collection = $items;
+        return $this;
+    }
     
     /**
      * Retrieves details for a folder, including the first 100 entries in the folder.
@@ -524,8 +586,6 @@ class Folder extends AbstractResource
         }
         
     }
-    
-    
     
     public function delete_folder(string $folder_id = null, bool $recursive = false)
     {

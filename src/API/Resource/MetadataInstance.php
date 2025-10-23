@@ -13,8 +13,6 @@ use Laminas\Stdlib\ArraySerializableInterface;
  */
 class MetadataInstance extends AbstractResource implements ArraySerializableInterface
 {
-    use HydrationTrait;
-    
     public const API_FUNC = '/metadata/';
     
     /**

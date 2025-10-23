@@ -5,5 +5,4 @@ namespace comcduarte\Box\API\Resource;
 
 class Options extends AbstractResources
 {
-    use HydrationTrait;
 }
