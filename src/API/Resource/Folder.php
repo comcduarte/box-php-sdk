@@ -244,16 +244,6 @@ class Folder extends AbstractResource
      */
     public \stdClass $watermark_info;
     
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    public function setType($type)
-    {
-        $this->type = $type;
-    }
-
     /**
      * Retrieves details for a folder, including the first 100 entries in the folder.
      * Passing sort, direction, offset, and limit parameters in query allows you to manage the list of returned folder items.
