@@ -2,6 +2,7 @@
 namespace comcduarte\Box\API\Resource;
 
 use comcduarte\Box\API\RequestExtraFieldsTrait;
+use comcduarte\Box\API\Enum\ResourceType;
 
 class Folder extends AbstractResource
 {
@@ -13,99 +14,101 @@ class Folder extends AbstractResource
      *
      * @var string
      */
-    protected $content_type = 'application/json';
-        
-    /**
-     * 
-     * @var string
-     */
-    public $id;
+    protected string $content_type = 'application/json';
     
     /**
      * 
      * @var string
      */
-    public $type = 'folder';
+    public ResourceType $type = ResourceType::Folder;
     
     /**
      * 
      * @var string|array
      */
-    public $allowed_invitee_roles;
+    public array $allowed_invitee_roles;
     
     /**
      * 
      * @var string|array
      */
-    public $allowed_shared_link_access_levels;
+    public array $allowed_shared_link_access_levels;
     
     /**
      * 
      * @var boolean
      */
-    public $can_non_owners_invite;
+    public bool $can_non_owners_invite;
     
     /**
      * 
      * @var boolean
      */
-    public $can_non_owners_view_collaborators;
+    public bool $can_non_owners_view_collaborators;
     
     /**
      * 
      * @var object
      */
-    public $classification;
+    public \stdClass $classification;
     
     /**
      * Date Time
      * @var string|null
      */
-    public $content_created_at;
+    public string $content_created_at;
     
     /**
      * Date Time
      * @var string|null
      */
-    public $content_modified_at;
+    public string $content_modified_at;
+    
+    public string $created_at;
+    
+    public User $created_by;
     
     /**
      * 
      * @var string
      */
-    public $description;
+    public string $description;
     
     /**
      * 
      * @var string
      */
-    public $etag;
+    public string $etag;
     
     /**
      * 
      * @var object
      */
-    public $folder_upload_email;
+    public \stdClass $folder_upload_email;
     
     /**
      * 
      * @var boolean
      */
-    public $has_collaborations;
+    public bool $has_collaborations;
+    
+    public bool $is_accessible_via_shared_link;
+    
+    public bool $is_associated_with_app_item;
     
     /**
      * Specifies if new invites to this folder are restricted to users within the enterprise. This does not affect existing collaborations.
      * 
      * @var boolean
      */
-    public $is_collaboration_restricted_to_enterprise;
+    public bool $is_collaboration_restricted_to_enterprise;
     
     /**
      * Specifies if this folder is owned by a user outside of the authenticated enterprise.
      * 
      * @var boolean
      */
-    public $is_externally_owned;
+    public bool $is_externally_owned;
     
     /**
      * A page of the items that are in the folder.
@@ -113,7 +116,7 @@ class Folder extends AbstractResource
      * 
      * @var object
      */
-    public $item_collection;
+    public Items $item_collection;
     
     /**
      * Defines if this item has been deleted or not.
@@ -124,7 +127,7 @@ class Folder extends AbstractResource
      *    
      * @var string
      */
-    public $item_status;
+    public string $item_status;
     
     /**
      * An object containing the metadata instances that have been attached to this folder.
@@ -132,35 +135,35 @@ class Folder extends AbstractResource
      * 
      * @var array
      */
-    public $metadata;
+    public array $metadata;
     
     /**
      * The date and time when the folder was last updated. This value may be null for some folders such as the root folder or the trash folder.
      * 
      * @var string
      */
-    public $modified_at;
+    public string $modified_at;
     
     /**
      * User (mini) object
      * 
      * @var object
      */
-    public $modified_by;
+    public User $modified_by;
     
     /**
      * The name of the folder.
      * 
      * @var string
      */
-    public $name;
+    public string $name;
     
     /**
      * The user who owns this folder.
      * 
      * @var object
      */
-    public $owned_by;
+    public User $owned_by;
     
     /**
      * The optional folder that this folder is located within.
@@ -168,40 +171,40 @@ class Folder extends AbstractResource
      * 
      * @var Folder
      */
-    public $parent;
+    public Folder $parent;
     
     /**
      * 
      * @var object
      */
-    public $path_collection;
+    public Folders $path_collection;
     
     /**
      * 
      * @var object
      */
-    public $permissions;
+    public \stdClass $permissions;
     
     /**
      * The time at which this folder is expected to be purged from the trash.
      * 
      * @var string
      */
-    public $purged_at;
+    public string $purged_at;
     
     /**
      * A numeric identifier that represents the most recent user event that has been applied to this item.
      * 
      * @var string
      */
-    public $sequence_id;
+    public string $sequence_id;
     
     /**
      * The shared link for this folder. This will be [null] if no shared link has been created for this folder.
      * 
      * @var object
      */
-    public $shared_link;
+    public \stdClass $shared_link;
     
     /**
      * The folder size in bytes.
@@ -209,7 +212,7 @@ class Folder extends AbstractResource
      * 
      * @var integer
      */
-    public $size;
+    public int $size;
     
     /**
      * Specifies whether a folder should be synced to a user's device or not. This is used by Box Sync (discontinued) and is not used by Box Drive.
@@ -217,7 +220,7 @@ class Folder extends AbstractResource
      * 
      * @var string
      */
-    public $sync_state;
+    public string $sync_state;
     
     /**
      * The tags for this item. These tags are shown in the Box web app and mobile apps next to an item.
@@ -226,20 +229,20 @@ class Folder extends AbstractResource
      * 
      * @var string|array
      */
-    public $tags;
+    public array $tags;
     
     /**
      * The time at which this folder was put in the trash.
      * 
      * @var string
      */
-    public $trashed_at;
+    public string $trashed_at;
     
     /**
      * Details about the watermark applied to this folder
      * @var object
      */
-    public $watermark_info;
+    public \stdClass $watermark_info;
     
     /**
      * Retrieves details for a folder, including the first 100 entries in the folder.
