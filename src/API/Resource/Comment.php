@@ -251,7 +251,7 @@ class Comment extends AbstractResource
         }
     }
 
-    public function create_comment(string $message, BaseResource $item, Query $query): self|ClientError
+    public function create_comment(string $message, BaseResource $item, Query $query = null): self|ClientError
     {
         if (!isset($message) || !isset($item)) {
             throw new ClientErrorException('Parameters not set.');
@@ -371,11 +371,7 @@ class Comment extends AbstractResource
             } else {
                 call_user_func($callable, $value);
             }
-            
-            
         }
-        
         return $instance;
     }
-    
 }
