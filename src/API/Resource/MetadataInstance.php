@@ -22,21 +22,14 @@ class MetadataInstance extends AbstractResource implements ArraySerializableInte
      * 
      * @var boolean
      */
-    public $canEdit;
-    
-    /**
-     * A UUID to identify the metadata instance.
-     * 
-     * @var string
-     */
-    public $id;
+    public bool $canEdit;
     
     /**
      * The identifier of the item that this metadata instance has been attached to. This combines the type and the id of the parent in the form {type}_{id}.
      * 
      * @var string
      */
-    public $parent;
+    public string $parent;
     
     /**
      * An ID for the scope in which this template has been applied. This will be enterprise_{enterprise_id} for templates defined for use in this enterprise, 
@@ -44,35 +37,35 @@ class MetadataInstance extends AbstractResource implements ArraySerializableInte
      * 
      * @var string
      */
-    public $scope;
+    public string $scope;
     
     /**
      * The name of the template
      * 
      * @var string
      */
-    public $template;
+    public string $template;
     
     /**
      * A unique identifier for the "type" of this instance. This is an internal system property and should not be used by a client application.
      * 
      * @var string
      */
-    public $type;
+    public string $type;
     
     /**
      * The last-known version of the template of the object. This is an internal system property and should not be used by a client application.
      * 
      * @var integer
      */
-    public $typeVersion;
+    public int $typeVersion;
     
     /**
      * The version of the metadata instance. This version starts at 0 and increases every time a user-defined property is modified.
      * 
      * @var integer
      */
-    public $version;
+    public int $version;
     
     /**
      * @param string $endpoint

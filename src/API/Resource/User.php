@@ -1,30 +1,68 @@
 <?php
 namespace comcduarte\Box\API\Resource;
 
+use comcduarte\Box\API\Enum\ResourceType;
+
 class User extends AbstractResource
 {
-    public $id;
-    public $type = 'user';
-    public $address;
-    public $avatar_url;
-    public $created_at;
-    public $job_title;
-    public $language;
-    public $login;
-    public $max_upload_size;
-    public $modified_at;
-    public $name;
-    
+    public ResourceType $type = ResourceType::User;
+
+    public string $address;
+
+    public string $avatar_url;
+
+    public bool $can_see_managed_users;
+
+    public string $created_at;
+
+    public BaseResource $enterprise;
+
+    public string $external_app_user_id;
+
+    public string $hostname;
+
+    public bool $is_exempt_from_device_limits;
+
+    public bool $is_exempt_from_login_verification;
+
+    public bool $is_platform_access_only;
+
+    public bool $is_sync_enabled;
+
+    public string $job_title;
+
+    public string $language;
+
+    public string $login;
+
+    public int $max_upload_size;
+
+    public string $modified_at;
+
+    public array $my_tags;
+
+    public string $name;
+
     /**
-     * 
+     *
+     * @todo Convert into a Resource
      * @var NotificationEmail
      */
-    public $notification_email;
-    public $phone;
-    public $space_amount;
-    public $space_used;
-    public $status;
-    public $timezone;
+    public \stdClass $notification_email;
+
+    public string $phone;
+
+    public string $role;
+
+    public int $space_amount;
+
+    public int $space_used;
+
+    public string $status;
+
+    public string $timezone;
+
+    public \stdClass $tracking_codes;
     
     /**
      * Returns a list of all users for the Enterprise along with their user_id, public_name, and login.

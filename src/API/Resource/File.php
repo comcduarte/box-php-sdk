@@ -5,71 +5,132 @@ use comcduarte\Box\API\RepresentationsTrait;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArraySerializableInterface;
 use comcduarte\Box\API\Exception\ClientErrorException;
+use comcduarte\Box\API\Enum\ResourceType;
 
 class File extends AbstractResource implements ArraySerializableInterface
 {
     use HydrationTrait;
     use RepresentationsTrait;
-    
+
     /**
-     * 
      * @var string
      */
     protected $content_type = 'application/json';
-    
+
     /**
-     * 
      * @var string
      */
-    public $id;
-    
+    public ResourceType $type = ResourceType::File;
+
+    public array $allowed_invitee_roles = [];
+
+    public \stdClass $classification;
+
+    public int $comment_count;
+
     /**
-     * 
      * @var string
      */
-    public $type = 'file';
-    
+    public string $content_created_at;
+
+    public string $content_modified_at;
+
+    public string $created_at;
+
+    public User $created_by;
+
+    public string $description;
+
+    public string $disposition_at;
+
+    public string $etag;
+
+    public string $expires_at;
+
+    public \stdClass $expiring_embed_link;
+
+    public string $extension;
+
+    public FileVersion $file_version;
+
+    public bool $has_collaborations;
+
+    public bool $is_accessible_via_shared_link;
+
+    public bool $is_associated_with_app_item;
+
+    public bool $is_externally_owned;
+
+    public bool $is_package;
+
     /**
-     * 
+     *
+     * @todo Item Status should be an enum with values active,trashed,deleted
      * @var string
      */
-    public $content_created_at;
+    public string $item_status;
+
+    /**
+     *
+     * @todo Convert into a Resource
+     * @var stdClass
+     */
+    public \stdClass $lock;
+
+    public array $metadata;
+
+    public string $modified_at;
+
+    public User $modified_by;
+
+    public string $name;
+
+    public User $owned_by;
+
+    public Folder $parent;
+
+    public Folders $path_collection;
+
+    /**
+     * @todo Convert into a Resource
+     * @var stdClass
+     */
+    public \stdClass $permissions;
+
+    public string $purged_at;
+
+    /**
+     * @todo Convert into a Resource
+     * @var array
+     */
+    public array $representations;
+
+    public string $sequence_id;
+
+    public string $sha1;
+
+    /**
+     * @todo Convert into a Resource
+     */
+    public \stdClass $shared_link;
+
+    public array $shared_link_permission_options;
+
+    public int $size;
+
+    public array $tags;
     
+    public string $trashed_at;
     
-    public $created_at;
+    public string $uploader_display_name;
+    
+    public string $version_number;
     
     /**
-     * 
+     * @todo Convert into a Resource.
+     * @var stdClass
      */
-    public $created_by;
-    public $description;
-    public $etag;
-    
-    /**
-     * 
-     */
-    public $file_version;
-    public $item_status;
-    public $modified_at;
-    public $name;
-    public $owned_by;
-    public $parent;
-    
-    /**
-     */
-    public $path_collection;
-    
-    public $purged_at;
-    public $sequence_id;
-    public $sha1;
-    
-    /**
-     * 
-     */
-    public $shared_link;
-    
-    public $size;
-    public $trashed_at;
+    public \stdClass $watermark_info;
     
     /**
      * Retrieves the details about a file.

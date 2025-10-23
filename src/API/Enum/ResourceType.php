@@ -11,4 +11,6 @@ Enum ResourceType: string
     case File_Version = 'file_version';
     case Workflow = 'workflow';
     case Comment = 'comment';
+    case Metadata_Template = 'metadata_template';
+    case User = 'user';
 }
