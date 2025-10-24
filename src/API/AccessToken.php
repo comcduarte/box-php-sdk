@@ -10,6 +10,8 @@ use InvalidArgumentException;
 
 class AccessToken extends AbstractResource
 {
+    use HydrationTrait;
+    
     const API_URL = 'https://api.box.com';
     
     const REQUEST_URI = '/oauth2/token';
@@ -24,6 +26,9 @@ class AccessToken extends AbstractResource
     public $box_shared_link;
     public $box_subject_id;
     public $box_subject_type;
+    public $public_key_id;
+    public $private_key;
+    public $passphrase;
     public $client_id;
     public $client_secret;
     public $code;
@@ -39,6 +44,36 @@ class AccessToken extends AbstractResource
     private $restricted_to;
     private $token_type;
     
+    public function getExpiresIn()
+    {
+        return $this->expires_in;
+    }
+
+    public function getRestrictedTo()
+    {
+        return $this->restricted_to;
+    }
+
+    public function getTokenType()
+    {
+        return $this->token_type;
+    }
+
+    public function setExpiresIn($expires_in)
+    {
+        $this->expires_in = $expires_in;
+    }
+
+    public function setRestrictedTo($restricted_to)
+    {
+        $this->restricted_to = $restricted_to;
+    }
+
+    public function setTokenType($token_type)
+    {
+        $this->token_type = $token_type;
+    }
+
     public function __construct(
         $client_id, 
         ?string $client_secret = null, 
@@ -191,7 +226,15 @@ class AccessToken extends AbstractResource
         } 
         return $this->access_token;
     }
+    
+    public function setAccessToken($access_token)
+    {
+        $this->access_token = $access_token;
+        return $this;
+    }
 
+    
+    
     private function decrypt_private_key($private_key, $passphrase)
     {
         $key = openssl_pkey_get_private($private_key, $passphrase);

@@ -46,10 +46,10 @@ class MetadataInstance extends AbstractResource implements ArraySerializableInte
     
     /**
      * A unique identifier for the "type" of this instance. This is an internal system property and should not be used by a client application.
-     * 
+     * Removed: conflicts with BaseResource::type
      * @var string
      */
-    public string $type;
+//     public string $type;
     
     /**
      * The last-known version of the template of the object. This is an internal system property and should not be used by a client application.

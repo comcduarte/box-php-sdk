@@ -1,12 +1,11 @@
 <?php
 namespace comcduarte\Box\API\Resource;
 
-use comcduarte\Box\API\AccessToken;
 use Laminas\Http\Client;
 use Laminas\Http\Headers;
 use Laminas\Http\Response;
 use Laminas\Http\Client\Adapter\Curl;
-use Laminas\Hydrator\ArraySerializableHydrator;
+use comcduarte\Box\API\AccessToken;
 
 abstract class AbstractResource extends BaseResource
 {
@@ -62,7 +61,7 @@ abstract class AbstractResource extends BaseResource
      */
     protected $uri;
     
-    public string $version = '2024.0';
+    public string $_version = '2024.0';
     
     public function __construct($access_token = null)
     {
@@ -203,8 +202,8 @@ abstract class AbstractResource extends BaseResource
     
     private function add_version()
     {
-        if (isset($this->version)) {
-            $this->headers->addHeaderLine(sprintf('box-version: %s', $this->version));
+        if (isset($this->_version)) {
+            $this->headers->addHeaderLine(sprintf('box-version: %s', $this->_version));
         }
         return $this;
     }
@@ -246,52 +245,6 @@ abstract class AbstractResource extends BaseResource
         return strtr($endpoint, $params);
     }
     
-    public function exchangeArray(array $data)
-    {
-        $instance = clone $this;
-        
-        /** @psalm-suppress MixedAssignment */
-        foreach ($data as $property => $value) {
-            $original_property = $property;
-            $property = lcfirst(str_replace('_', '', ucwords($property, '_')));
-            $setter   = sprintf('set%s', ucfirst($property));
-            $callable = [$this, $setter];
-            if (! is_callable($callable) ) {
-                if (!empty($value)) {
-                    $this->$original_property = $value;
-                }
-                continue;
-            } else {
-                call_user_func($callable, $value);
-            }
-        }
-        return $instance;
-    }
-
-    public function getArrayCopy()
-    {
-        $data = [];
-        foreach (array_keys(get_object_vars($this)) as $var) {
-            $data[$var] = $this->{$var};
-        }
-        return $data;
-    }
-    
-    public function hydrate($response)
-    {
-        $hydrator = new ArraySerializableHydrator();
-        
-        if (is_a($response, Response::class)) {
-            $data = json_decode($response->getContent(), true);
-            $hydrator->hydrate($data, $this);
-        } elseif (is_array($response)) {
-            $hydrator->hydrate($response, $this);
-        } else {
-            throw new \Exception('Invalid parameter in hydrate function.  Must be of type array or Response.');
-        }
-        return $this;
-    }
-
     /**
      * @return ClientError | OAuth20Error
      */

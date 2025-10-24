@@ -9,7 +9,36 @@ trait HydrationTrait
     public function exchangeArray(array $array)
     {
         foreach (array_keys(get_object_vars($this)) as $var) {
-            if (!empty($array[$var])) {
+            
+            //-- Skip if no value was passed --//
+            if (empty($array[$var])) {
+                continue;
+            }
+            
+            $reflectionProperty = new \ReflectionProperty($this, $var);
+            if ($reflectionProperty->hasType()) {
+                //-- Property has a declared type --//
+                $reflectionType = $reflectionProperty->getType();
+                switch ($reflectionType)
+                {
+                    case 'string':
+                    case 'array':
+                        $this->$var = $array[$var];
+                        break;
+                    default:
+                        $property = lcfirst(str_replace('_', '', ucwords($var, '_')));
+                        $setter   = sprintf('set%s', ucfirst($property));
+                        $callable = [$this, $setter];
+                        if (!is_callable($callable)) {
+                            throw new \Exception(
+                                sprintf('Unable to call %s', $setter)
+                                );
+                        }
+                        break;
+                }
+                
+            } else {
+                //-- Property does not have a declared type --//
                 $this->$var = $array[$var];
             }
         }

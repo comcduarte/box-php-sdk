@@ -9,7 +9,7 @@ class BaseResource
 
     use HydrationTrait;
 
-    public string $id;
+    public string $id = '';
 
     public ResourceType $type;
 
