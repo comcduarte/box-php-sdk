@@ -244,6 +244,13 @@ class Folder extends AbstractResource
      */
     public \stdClass $watermark_info;
     
+    public function __construct($access_token = null)
+    {
+        parent::__construct($access_token);
+        $this->item_collection = new Items();
+        return $this;
+    }
+    
     public function getCreatedBy()
     {
         return $this->created_by;
@@ -346,14 +353,8 @@ class Folder extends AbstractResource
                  * Not all available fields are returned by default. Use the fields query parameter to explicitly request any specific fields.
                  * @var \comcduarte\Box\API\Resource\Folder $folder
                  */
-                $folder = new Folder($this->token);
-                $folder->hydrate($this->response);
-                
-                /**
-                 * Hydrate $this object as well.
-                 */
                 $this->hydrate($this->response);
-                return $folder;
+                return $this;
             case 403:
                 /**
                  * Returned when the access token provided in the Authorization header is not recognized or not provided.

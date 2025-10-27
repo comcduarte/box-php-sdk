@@ -6,16 +6,16 @@ use Laminas\Hydrator\ArraySerializableHydrator;
 
 trait HydrationTrait
 {
-    public function exchangeArray(array $array)
+    public function exchangeArray(array $data)
     {
-        foreach (array_keys(get_object_vars($this)) as $var) {
+        foreach ($data as $property => $value) {
             
             //-- Skip if no value was passed --//
-            if (empty($array[$var])) {
+            if (empty($value)) {
                 continue;
             }
             
-            $reflectionProperty = new \ReflectionProperty($this, $var);
+            $reflectionProperty = new \ReflectionProperty($this, $property);
             if ($reflectionProperty->hasType()) {
                 //-- Property has a declared type --//
                 $reflectionType = $reflectionProperty->getType();
@@ -23,10 +23,12 @@ trait HydrationTrait
                 {
                     case 'string':
                     case 'array':
-                        $this->$var = $array[$var];
+                    case 'int':
+                    case 'bool':
+                        $this->$property = $value;
                         break;
                     default:
-                        $property = lcfirst(str_replace('_', '', ucwords($var, '_')));
+                        $property = lcfirst(str_replace('_', '', ucwords($property, '_')));
                         $setter   = sprintf('set%s', ucfirst($property));
                         $callable = [$this, $setter];
                         if (!is_callable($callable)) {
@@ -34,12 +36,13 @@ trait HydrationTrait
                                 sprintf('Unable to call %s', $setter)
                                 );
                         }
+                        call_user_func($callable, $value);
                         break;
                 }
                 
             } else {
                 //-- Property does not have a declared type --//
-                $this->$var = $array[$var];
+                $this->$property = $value;
             }
         }
     }
