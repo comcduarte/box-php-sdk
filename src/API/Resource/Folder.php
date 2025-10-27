@@ -268,48 +268,67 @@ class Folder extends AbstractResource
     
     public function setCreatedBy($created_by)
     {
-        $user = new User($this->token);
-        $user->hydrate($created_by);
-        $this->created_by = $user;
+        if ($created_by instanceof User) {
+            $this->created_by = $created_by;
+        } else {
+            $this->created_by = new User($this->token);
+            $this->created_by->hydrate($created_by);
+        }
         return $this;
     }
     
-    public function setItemCollection($item_collection)
+    public function setItemCollection($item_collection): self
     {
-        $this->item_collection = new Items();
-        $this->item_collection->hydrate($item_collection);
+        if ($item_collection instanceof Items) {
+            $this->item_collection = $item_collection;
+        } else {
+            $this->item_collection = new Items();
+            $this->item_collection->hydrate($item_collection);
+        }
         return $this;
     }
     
     public function setModifiedBy($modified_by)
     {
-        $user = new User($this->token);
-        $user->hydrate($modified_by);
-        $this->modified_by = $user;
+        if ($modified_by instanceof User) {
+            $this->created_by = $modified_by;
+        } else {
+            $this->modified_by = new User($this->token);
+            $this->modified_by->hydrate($modified_by);
+        }
         return $this;
     }
     
     public function setOwnedBy($owned_by)
     {
-        $user = new User($this->token);
-        $user->hydrate($owned_by);
-        $this->owned_by = $user;
+        if ($owned_by instanceof User) {
+            $this->created_by = $owned_by;
+        } else {
+            $this->owned_by = new User($this->token);
+            $this->owned_by->hydrate($owned_by);
+        }
         return $this;
     }
     
-    public function setParent($parent)
+    public function setParent($parent): self
     {
-        $folder = new Folder($this->token);
-        $folder->hydrate($parent);
-        $this->parent = $folder;
+        if ($parent instanceof Folder) {
+            $this->parent = $parent;
+        } else {
+            $this->parent = new Folder($this->token);
+            $this->parent->hydrate($parent);
+        }
         return $this;
     }
     
-    public function setPathCollection($path_collection)
+    public function setPathCollection($path_collection): self
     {
-        $items = new Items();
-        $items->hydrate($path_collection);
-        $this->path_collection = $items;
+        if ($path_collection instanceof Items) {
+            $this->path_collection = $path_collection;
+        } else {
+            $this->path_collection = new Items();
+            $this->path_collection->hydrate($path_collection);
+        }
         return $this;
     }
     
