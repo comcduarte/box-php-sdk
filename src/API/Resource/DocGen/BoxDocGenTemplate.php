@@ -16,7 +16,7 @@ class BoxDocGenTemplate extends AbstractResource
     
     public string $file_name = '';
     
-    public string $version = '2025.0';
+    public string $_version = '2025.0';
     
     public function list_box_doc_gen_templates(): BoxDocGenTemplates|ClientError
     {

@@ -33,7 +33,7 @@ class BoxDocGenJob extends AbstractResource
 
     public BaseResource $template_file_version;
 
-    public string $version = '2025.0';
+    public string $_version = '2025.0';
 
     public function list_all_doc_gen_jobs(): BoxDocGenJobs|ClientError
     {
