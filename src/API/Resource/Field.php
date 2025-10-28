@@ -5,7 +5,7 @@ namespace comcduarte\Box\API\Resource;
 
 use comcduarte\Box\API\Enum\FieldType;
 
-class Field
+class Field 
 {
     /**
      * The unique ID of the metadata template field.
@@ -57,4 +57,6 @@ class Field
      * @var Options
      */
     public Options $options;
+
+    
 }
