@@ -11,7 +11,7 @@ trait HydrationTrait
         foreach ($data as $property => $value) {
             
             //-- Skip if no value was passed --//
-            if (empty($value)) {
+            if (empty($value) || !property_exists($this, $property)) {
                 continue;
             }
             

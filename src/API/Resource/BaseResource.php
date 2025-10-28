@@ -11,7 +11,7 @@ class BaseResource
 
     public string $id = '';
 
-    public ResourceType $type;
+    private ResourceType $type;
 
     public function getId()
     {

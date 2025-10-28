@@ -49,7 +49,7 @@ class MetadataInstance extends AbstractResource implements ArraySerializableInte
      * Removed: conflicts with BaseResource::type
      * @var string
      */
-//     public string $type;
+    private string $type;
     
     /**
      * The last-known version of the template of the object. This is an internal system property and should not be used by a client application.
@@ -64,6 +64,11 @@ class MetadataInstance extends AbstractResource implements ArraySerializableInte
      * @var integer
      */
     public int $version;
+    
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
     
     /**
      * @param string $endpoint

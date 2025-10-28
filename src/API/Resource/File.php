@@ -89,7 +89,7 @@ class File extends AbstractResource implements ArraySerializableInterface
 
     public Folder $parent;
 
-    public Folders $path_collection;
+    public Items $path_collection;
 
     /**
      * @todo Convert into a Resource
@@ -125,6 +125,28 @@ class File extends AbstractResource implements ArraySerializableInterface
      * @var stdClass
      */
     public \stdClass $watermark_info;
+    
+    public function setFileVersion($file_version)
+    {
+        if ($file_version instanceof FileVersion) {
+            $this->file_version = $file_version;
+        } else {
+            $this->file_version = new FileVersion($this->token);
+            $this->file_version->hydrate($file_version);
+        }
+        return $this;        
+    }
+    
+    public function setPathCollection($path_collection): self
+    {
+        if ($path_collection instanceof Items) {
+            $this->path_collection = $path_collection;
+        } else {
+            $this->path_collection = new Items();
+            $this->path_collection->hydrate($path_collection);
+        }
+        return $this;
+    }
     
     /**
      * Retrieves the details about a file.

@@ -266,17 +266,6 @@ class Folder extends AbstractResource
         return $this->path_collection;
     }
     
-    public function setCreatedBy($created_by)
-    {
-        if ($created_by instanceof User) {
-            $this->created_by = $created_by;
-        } else {
-            $this->created_by = new User($this->token);
-            $this->created_by->hydrate($created_by);
-        }
-        return $this;
-    }
-    
     public function setItemCollection($item_collection): self
     {
         if ($item_collection instanceof Items) {
@@ -284,6 +273,17 @@ class Folder extends AbstractResource
         } else {
             $this->item_collection = new Items();
             $this->item_collection->hydrate($item_collection);
+        }
+        return $this;
+    }
+    
+    public function setCreatedBy($created_by)
+    {
+        if ($created_by instanceof User) {
+            $this->created_by = $created_by;
+        } else {
+            $this->created_by = new User($this->token);
+            $this->created_by->hydrate($created_by);
         }
         return $this;
     }
