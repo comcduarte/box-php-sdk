@@ -137,6 +137,17 @@ class File extends AbstractResource implements ArraySerializableInterface
         return $this;        
     }
     
+    public function setParent($parent): self
+    {
+        if ($parent instanceof Folder) {
+            $this->parent = $parent;
+        } else {
+            $this->parent = new Folder($this->token);
+            $this->parent->hydrate($parent);
+        }
+        return $this;
+    }
+    
     public function setPathCollection($path_collection): self
     {
         if ($path_collection instanceof Items) {
@@ -144,6 +155,39 @@ class File extends AbstractResource implements ArraySerializableInterface
         } else {
             $this->path_collection = new Items();
             $this->path_collection->hydrate($path_collection);
+        }
+        return $this;
+    }
+    
+    public function setCreatedBy($created_by)
+    {
+        if ($created_by instanceof User) {
+            $this->created_by = $created_by;
+        } else {
+            $this->created_by = new User($this->token);
+            $this->created_by->hydrate($created_by);
+        }
+        return $this;
+    }
+    
+    public function setModifiedBy($modified_by)
+    {
+        if ($modified_by instanceof User) {
+            $this->created_by = $modified_by;
+        } else {
+            $this->modified_by = new User($this->token);
+            $this->modified_by->hydrate($modified_by);
+        }
+        return $this;
+    }
+    
+    public function setOwnedBy($owned_by)
+    {
+        if ($owned_by instanceof User) {
+            $this->created_by = $owned_by;
+        } else {
+            $this->owned_by = new User($this->token);
+            $this->owned_by->hydrate($owned_by);
         }
         return $this;
     }
