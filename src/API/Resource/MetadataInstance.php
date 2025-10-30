@@ -3,6 +3,7 @@ namespace comcduarte\Box\API\Resource;
 
 
 use Laminas\Stdlib\ArraySerializableInterface;
+use comcduarte\Box\API\Enum\ResourceType;
 
 /**
  * 
@@ -49,7 +50,7 @@ class MetadataInstance extends AbstractResource implements ArraySerializableInte
      * Removed: conflicts with BaseResource::type
      * @var string
      */
-    private string $type;
+    public ResourceType $type = ResourceType::Metadata_Instance;
     
     /**
      * The last-known version of the template of the object. This is an internal system property and should not be used by a client application.
@@ -64,11 +65,6 @@ class MetadataInstance extends AbstractResource implements ArraySerializableInte
      * @var integer
      */
     public int $version;
-    
-    public function setType($type)
-    {
-        $this->type = $type;
-    }
     
     /**
      * @param string $endpoint

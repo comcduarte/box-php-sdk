@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace comcduarte\Box\API\Resource;
 
 use Laminas\Http\Response;
+use comcduarte\Box\API\Enum\ResourceType;
 
 class MetadataTemplate extends AbstractResource
 {
@@ -18,7 +19,7 @@ class MetadataTemplate extends AbstractResource
      * Value is always metadata_template.
      * @var string
      */
-    public string $type = 'metadata_template';
+    public ResourceType $type = ResourceType::Metadata_Template;
     
     /**
      * Whether or not to include the metadata when a file or folder is copied.
