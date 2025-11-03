@@ -61,7 +61,7 @@ trait HydrationTrait
         $hydrator = new ArraySerializableHydrator();
         
         if (is_a($response, Response::class)) {
-            $data = json_decode($response->getContent(), true);
+            $data = json_decode($response->getBody(), true);
             $hydrator->hydrate($data, $this);
         } elseif (is_array($response)) {
             $hydrator->hydrate($response, $this);
