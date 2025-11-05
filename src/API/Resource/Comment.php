@@ -265,8 +265,8 @@ class Comment extends AbstractResource
         $data = [
             'message' => $message,
             'item' => [
-                'id' => $item->id,
-                'type' => $item->type,
+                'id' => $item->getId(),
+                'type' => $item->getType(),
             ],
         ];
         
