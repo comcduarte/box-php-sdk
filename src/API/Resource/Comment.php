@@ -45,7 +45,7 @@ class Comment extends AbstractResource
     /**
      * @return string
      */
-    public function getCreated_at()
+    public function getCreatedAt()
     {
         return $this->created_at;
     }
@@ -53,7 +53,7 @@ class Comment extends AbstractResource
     /**
      * @return \comcduarte\Box\API\Resource\User
      */
-    public function getCreated_by()
+    public function getCreatedBy()
     {
         return $this->created_by;
     }
@@ -61,7 +61,7 @@ class Comment extends AbstractResource
     /**
      * @return boolean
      */
-    public function isIs_reply_comment()
+    public function isReplyComment()
     {
         return $this->is_reply_comment;
     }
@@ -85,7 +85,7 @@ class Comment extends AbstractResource
     /**
      * @return string
      */
-    public function getModified_at()
+    public function getModifiedAt()
     {
         return $this->modified_at;
     }
@@ -93,7 +93,7 @@ class Comment extends AbstractResource
     /**
      * @return string
      */
-    public function getTagged_message()
+    public function getTaggedMessage()
     {
         return $this->tagged_message;
     }
@@ -117,7 +117,7 @@ class Comment extends AbstractResource
     /**
      * @param string $created_at
      */
-    public function setCreated_at($created_at)
+    public function setCreatedAt($created_at)
     {
         $this->created_at = $created_at;
     }
@@ -125,7 +125,7 @@ class Comment extends AbstractResource
     /**
      * @param \comcduarte\Box\API\Resource\User $created_by
      */
-    public function setCreated_by($created_by)
+    public function setCreatedBy($created_by)
     {
         $this->created_by = $created_by;
     }
@@ -133,7 +133,7 @@ class Comment extends AbstractResource
     /**
      * @param boolean $is_reply_comment
      */
-    public function setIs_reply_comment($is_reply_comment)
+    public function setIsReplyComment($is_reply_comment)
     {
         $this->is_reply_comment = $is_reply_comment;
     }
@@ -159,7 +159,7 @@ class Comment extends AbstractResource
     /**
      * @param string $modified_at
      */
-    public function setModified_at($modified_at)
+    public function setModifiedAt($modified_at)
     {
         $this->modified_at = $modified_at;
     }
@@ -167,7 +167,7 @@ class Comment extends AbstractResource
     /**
      * @param string $tagged_message
      */
-    public function setTagged_message($tagged_message)
+    public function setTaggedMessage($tagged_message)
     {
         $this->tagged_message = $tagged_message;
     }
@@ -356,6 +356,4 @@ class Comment extends AbstractResource
                 return $this->error();
         }
     }
-
-    
 }
