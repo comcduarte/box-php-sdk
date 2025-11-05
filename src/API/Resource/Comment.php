@@ -127,7 +127,13 @@ class Comment extends AbstractResource
      */
     public function setCreatedBy($created_by)
     {
-        $this->created_by = $created_by;
+        if ($created_by instanceof User) {
+            $this->created_by = $created_by;
+        } else {
+            $this->created_by = new User($this->token);
+            $this->created_by->hydrate($created_by);
+        }
+        return $this;
     }
 
     /**
@@ -143,9 +149,13 @@ class Comment extends AbstractResource
      */
     public function setItem($item)
     {
-        $object = new BaseResource();
-        $object->hydrate($item);
-        $this->item = $object;
+        if ($item instanceof BaseResource) {
+            $this->item = $item;
+        } else {
+            $this->item = new BaseResource($this->token);
+            $this->item->hydrate($item);
+        }
+        return $this;
     }
 
     /**
