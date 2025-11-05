@@ -1,12 +1,6 @@
 <?php
 namespace comcduarte\Box\API\Resource;
 
-use Laminas\Http\Response;
-use Laminas\Stdlib\ArraySerializableInterface;
-use comcduarte\Box\API\RepresentationsTrait;
-use comcduarte\Box\API\Enum\ResourceType;
-use comcduarte\Box\API\Exception\ClientErrorException;
-use stdClass;
 
 class File extends AbstractResource implements ArraySerializableInterface
 {
@@ -497,11 +491,15 @@ class File extends AbstractResource implements ArraySerializableInterface
         }
     }
     
-    public function request_desired_representation(string $type = null, string $size = null)
+    public function request_desired_representation(string $type, ?string $size = null)
     {
         $this->headers->clearHeaders();
-        $properties = sprintf('[%s?dimensions=%s]', $type, $size);
-        $this->headers->addHeaderLine('x-rep-hints',$properties);
+        if ($size) {
+            $properties = sprintf('[%s?dimensions=%s]', $type, $size);
+        } else {
+            $properties = sprintf('[%s]', $type);
+        }
+        $this->headers->addHeaderLine('x-rep-hints', $properties);
         return $this->get_file_information($this->id);
     }
 

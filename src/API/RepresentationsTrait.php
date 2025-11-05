@@ -13,7 +13,7 @@ Trait RepresentationsTrait
         return $this;
     }
     
-    abstract public function request_desired_representation();
+    abstract public function request_desired_representation(string $type, ?string $size = null);
     
     abstract public function download_file_representation();
 }
