@@ -1,6 +1,12 @@
 <?php
 namespace comcduarte\Box\API\Resource;
 
+use Laminas\Http\Response;
+use Laminas\Stdlib\ArraySerializableInterface;
+use comcduarte\Box\API\RepresentationsTrait;
+use comcduarte\Box\API\Enum\ResourceType;
+use comcduarte\Box\API\Exception\ClientErrorException;
+use stdClass;
 
 class File extends AbstractResource implements ArraySerializableInterface
 {
