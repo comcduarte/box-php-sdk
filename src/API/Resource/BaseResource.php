@@ -3,10 +3,10 @@ declare(strict_types = 1);
 namespace comcduarte\Box\API\Resource;
 
 use comcduarte\Box\API\Enum\ResourceType;
+use JsonSerializable;
 
-class BaseResource
+class BaseResource implements JsonSerializable
 {
-
     use HydrationTrait;
 
     public string $id = '';
@@ -31,5 +31,13 @@ class BaseResource
     public function setType($type)
     {
         $this->type = ResourceType::from($type);
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->getId(),
+            'type' => $this->getType()->value,
+        ];
     }
 }
