@@ -1,4 +1,4 @@
-<?php
+c<?php
 namespace comcduarte\Box\API\Resource;
 
 
@@ -83,12 +83,11 @@ class MetadataInstance extends AbstractResource implements ArraySerializableInte
                 /**
                  * Returns the instance of the template that was applied to the file/folder, including the data that was applied to the template.
                  */
-                $metadata_instance = new MetadataInstance($this->token);
                 
                 /**
-                * API returns global properties with prefix of $
-                * Remove $ and set properties in array before hydrating
-                */
+                 * API returns global properties with prefix of $
+                 * Remove $ and set properties in array before hydrating
+                 */
                 $data = json_decode($this->response->getContent(), true);
                 foreach ($data as $key => $value) {
                     $property = trim($key, '$');
@@ -99,8 +98,8 @@ class MetadataInstance extends AbstractResource implements ArraySerializableInte
                     
                 }
                 
-                $metadata_instance->hydrate($data);
-                return $metadata_instance;
+                $this->hydrate($data);
+                return $this;
             case 400:
                 /**
                  * Returns an error when the request body is not valid.
@@ -174,7 +173,6 @@ class MetadataInstance extends AbstractResource implements ArraySerializableInte
                 /**
                  * An instance of the metadata template that includes additional "key:value" pairs defined by the user or an application.
                  */
-                $metadata_instance = new MetadataInstance($this->token);
                 
                 /**
                  * API returns global properties with prefix of $
@@ -190,9 +188,8 @@ class MetadataInstance extends AbstractResource implements ArraySerializableInte
                     
                 }
                 
-                $metadata_instance->hydrate($data);
                 $this->hydrate($data);
-                return $metadata_instance;
+                return $this;
             case 403:
                 /**
                  * Returned when the request parameters are not valid.
@@ -225,12 +222,6 @@ class MetadataInstance extends AbstractResource implements ArraySerializableInte
                 /**
                  * Returns the updated metadata template instance, with the custom template data included.
                  */
-                $metadata_instance = new MetadataInstance($this->token);
-                
-                /**
-                 * API returns global properties with prefix of $
-                 * Remove $ and set properties in array before hydrating
-                 */
                 $data = json_decode($this->response->getContent(), true);
                 foreach ($data as $key => $value) {
                     $property = trim($key, '$');
@@ -241,8 +232,8 @@ class MetadataInstance extends AbstractResource implements ArraySerializableInte
                     
                 }
                 
-                $metadata_instance->hydrate($data);
-                return $metadata_instance;
+                $this->hydrate($data);
+                return $this;
             case 400:
                 /**
                  * Returns an error when the request body is not valid.
