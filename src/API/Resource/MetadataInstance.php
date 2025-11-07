@@ -1,6 +1,5 @@
-c<?php
+<?php
 namespace comcduarte\Box\API\Resource;
-
 
 use Laminas\Stdlib\ArraySerializableInterface;
 use comcduarte\Box\API\Enum\ResourceType;
