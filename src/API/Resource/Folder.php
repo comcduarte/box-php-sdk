@@ -482,16 +482,9 @@ class Folder extends AbstractResource
         {
             case 201:
                 //-- OK --//
-                $folder = new Folder($this->token);
-                $folder->hydrate($this->response);
-                return $folder;
-            case 400:
-                /**
-                 * Returns an error if some of the parameters are missing or not valid.
-                 * bad_request when a parameter is missing or incorrect.
-                 * item_name_too_long when the folder name is too long.
-                 * item_name_invalid when the folder name contains non-valid characters.
-                 */
+                $this->hydrate($this->response);
+                return $this;
+            
             case 403:
                 /**
                  * Returns an error if the user does not have the required access to perform
@@ -501,6 +494,13 @@ class Folder extends AbstractResource
                  */
                 $content = '{"type":"error","status":403,"code":"insufficient_scope","context_info":{"errors":[{"reason":"insufficient_scope","name":"item","message":"The request requires higher privileges than provided by the access token."}]},"help_url":"http:\/\/developers.box.com\/docs\/#errors","message":"Not Found","request_id":"yupg0ohrkrkf4jw3"}';
                 $this->response->setContent($content);
+            case 400:
+                /**
+                 * Returns an error if some of the parameters are missing or not valid.
+                 * bad_request when a parameter is missing or incorrect.
+                 * item_name_too_long when the folder name is too long.
+                 * item_name_invalid when the folder name contains non-valid characters.
+                 */
             case 404:
                 /**
                  * Returns an error if the parent folder could not be found, or the
