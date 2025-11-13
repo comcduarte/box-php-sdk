@@ -26,11 +26,13 @@ class BaseResource implements JsonSerializable
     public function setId($id)
     {
         $this->id = $id;
+        return $this;
     }
 
     public function setType($type)
     {
         $this->type = ResourceType::from($type);
+        return $this;
     }
 
     public function jsonSerialize(): mixed
