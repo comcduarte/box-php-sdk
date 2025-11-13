@@ -486,9 +486,11 @@ class File extends AbstractResource implements ArraySerializableInterface
         switch ($this->response->getStatusCode())
         {
             case 200:
-                return $this->getResponse();
             case 202:
-                throw new \Exception('202 Retry Error');
+                /**
+                 * Document not ready.  Retry.
+                 */
+                return $this->getResponse();
             default:
                 /**
                  * An unexpected client error.
