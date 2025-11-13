@@ -105,6 +105,45 @@ class BoxDocGenJob extends AbstractResource
                 return $this->error();
         }
     }
+    
+    public function get_box_doc_gen_job_by_batch(BoxDocGenBatch $batch): BoxDocGenJobs | ClientError
+    {
+        $endpoint = 'https://api.box.com/2.0/docgen_batch_jobs/:batch_id';
+        $params = [
+            'batch_id' => $batch->id,
+        ];
+        
+        $uri = $this->generate_uri($endpoint, $params);
+        $this->response = $this->get($uri);
+        
+        switch ($this->response->getStatusCode()) {
+            case 200:
+                /**
+                 * Returns a list of Box Doc Gen jobs in a Box Doc Gen batch.
+                 */
+                $jobs = new BoxDocGenJobs();
+                $jobs->hydrate($this->response);
+                return $jobs;
+            case 400:
+                /**
+                 * Returned if the user has passed in a malformed marker or limit value.
+                 */
+            case 403:
+                /**
+                 * The client does not have access rights to the content or resource requested.
+                 */
+            case 404:
+                /**
+                 * Returned if the job is not found or the user does not have access to the associated job.
+                 */
+            case 429:
+                /**
+                 * The user has sent too many requests in a given amount of time.
+                 */
+            default:
+                return $this->error();
+        }
+    }
 
     /**
      *
