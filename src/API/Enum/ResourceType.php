@@ -14,6 +14,8 @@ Enum ResourceType: string
     case Workflow = 'workflow';
 
     case Comment = 'comment';
+    
+    case Metadata_Cascade_Policy = 'metadata_cascade_policy';
 
     case Metadata_Instance = 'metadata_instance';
 
