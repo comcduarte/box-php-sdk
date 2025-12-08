@@ -9,7 +9,7 @@ class MetadataCascadePolicy extends AbstractResource
 {
     public ResourceType $type = ResourceType::Metadata_Cascade_Policy;
 
-    public BaseResource $owner_enterprise;
+    public array $owner_enterprise;
     
     public BaseResource $parent;
     
@@ -27,25 +27,19 @@ class MetadataCascadePolicy extends AbstractResource
      * @param string $owner_enterprise_id
      * @return MetadataCascadePolicies|ClientError
      */
-    public function list_metadata_cascade_policies(string $folder_id, ?string $marker, ?int $offset, ?string $owner_enterprise_id): MetadataCascadePolicies|ClientError
+    public function list_metadata_cascade_policies(string $folder_id =null, string $marker = null, int $offset = null, string $owner_enterprise_id = null): MetadataCascadePolicies|ClientError
     {
+        $query = array_filter(get_defined_vars(), fn($v) => $v !== null);
+        
         $endpoint = 'https://api.box.com/2.0/metadata_cascade_policies';
         $params = [
-        ];
-        
-        $query = new Query();
-        $query->fields = [
-            'folder_id'             => $folder_id,
-            'marker'                => $marker,
-            'offset'                => $offset,
-            'owner_enterprise_id'   => $owner_enterprise_id,
         ];
         
         if (isset($query)) {
             $endpoint .= '?:query';
             $params[':query'] = '';
             
-            foreach ($query->getArrayCopy() as $field => $value) {
+            foreach ($query as $field => $value) {
                 $params[':query'] .= sprintf('%s=%s', $field, $value);
             }
         }
@@ -134,7 +128,7 @@ class MetadataCascadePolicy extends AbstractResource
         
         $data = [
             'folder_id'   => $folder_id,
-            'scope '      => $scope,
+            'scope'      => $scope,
             'templateKey' => $templateKey,
         ];
         
@@ -143,7 +137,7 @@ class MetadataCascadePolicy extends AbstractResource
         
         switch ($this->response->getStatusCode())
         {
-            case 200:
+            case 201:
                 /**
                  */
                 $this->hydrate($this->response);
@@ -257,5 +251,42 @@ class MetadataCascadePolicy extends AbstractResource
                  */
                 return $this->error();
         }
+    }
+    
+
+    public function getParent()
+    {
+        return $this->parent;
+    }
+    
+
+    public function setParent($parent)
+    {
+        if ($parent instanceof BaseResource) {
+            $this->parent = $parent;
+        } else {
+            $this->parent = new BaseResource($this->token);
+            $this->parent->hydrate($parent);
+        }
+        return $this;
+    }
+
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'id' => $this->getId(),
+            'type' => $this->getType()->value,
+            'owner_enterprise' => [
+                'id' => $this->owner_enterprise['id'],
+                'type' => $this->owner_enterprise['type'],
+            ],
+            'parent' => [
+                'id' => $this->getParent()->getId(),
+                'type' => $this->getParent()->getType(),
+            ],
+            'scope' => $this->scope,
+            'templateKey' => $this->templateKey,
+        ];
     }
 }
