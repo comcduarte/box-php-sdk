@@ -180,7 +180,7 @@ class MetadataCascadePolicy extends AbstractResource
      * @param ConflictResolutionType $conflict_resolution
      * @return void|ClientError
      */
-    public function force_apply_metadata_cascade_policy_to_folder(string $metadata_cascade_policy_id, ConflictResolutionType $conflict_resolution): void|ClientError
+    public function force_apply_metadata_cascade_policy_to_folder(string $metadata_cascade_policy_id, ConflictResolutionType $conflict_resolution): ull|ClientError
     {
         $endpoint = 'https://api.box.com/2.0/metadata_cascade_policies/:metadata_cascade_policy_id/apply';
         $params = [
@@ -201,7 +201,7 @@ class MetadataCascadePolicy extends AbstractResource
                  * Returns an empty response when the API call was successful. The metadata cascade operation will be performed asynchronously.
                  * The API call will return directly, before the cascade operation is complete. There is currently no API to check for the status of this operation.
                  */
-                return;
+                return null;
             case 404:
                 /**
                  * Returns an error when the policy can not be found or the user does not have access to the folder.
@@ -222,7 +222,7 @@ class MetadataCascadePolicy extends AbstractResource
      * @param string $metadata_cascade_policy_id
      * @return void|ClientError
      */
-    public function remove_metadata_cascade_policy(string $metadata_cascade_policy_id): void|ClientError
+    public function remove_metadata_cascade_policy(string $metadata_cascade_policy_id): null|ClientError
     {
         $endpoint = 'https://api.box.com/2.0/metadata_cascade_policies/:metadata_cascade_policy_id';
         $params = [
@@ -238,7 +238,7 @@ class MetadataCascadePolicy extends AbstractResource
                 /**
                  * Returns an empty response when the policy is successfully deleted.
                  */
-                return ;
+                return null;
             case 404:
                 /**
                  * Returns an error when the policy can not be found or the user does not have access to the folder.
