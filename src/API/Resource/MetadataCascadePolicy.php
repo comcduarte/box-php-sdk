@@ -188,7 +188,7 @@ class MetadataCascadePolicy extends AbstractResource
         ];
         
         $data = [
-            'conflict_resolution' => $conflict_resolution,
+            'conflict_resolution' => $conflict_resolution->value,
         ];
         
         $uri = $this->generate_uri($endpoint, $params);
