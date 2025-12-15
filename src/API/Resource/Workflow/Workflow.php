@@ -37,11 +37,7 @@ class Workflow extends AbstractResource
         
         if (isset($query)) {
             $endpoint .= '?:query';
-            $params[':query'] = '';
-            
-            foreach ($query->getArrayCopy() as $field => $value) {
-                $params[':query'] .= sprintf('%s=%s', $field, $value);
-            }
+            $params[':query'] = http_build_query($query->getArrayCopy());
         }
         
         $uri = $this->generate_uri($endpoint, $params);

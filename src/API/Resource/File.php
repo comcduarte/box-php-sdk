@@ -428,11 +428,7 @@ class File extends AbstractResource implements ArraySerializableInterface
         
         if (isset($query)) {
             $endpoint .= '?:query';
-            $params[':query'] = '';
-            
-            foreach ($query as $field => $value) {
-                $params[':query'] .= sprintf('%s=%s', $field, $value);
-            }
+            $params[':query'] = http_build_query($query->getArrayCopy());
         }
         
         $uri = strtr($endpoint, $params);
