@@ -11,7 +11,7 @@ class BaseResource implements JsonSerializable
 
     public string $id = '';
 
-    private ResourceType $type;
+    public ResourceType $type;
 
     public function getId()
     {
