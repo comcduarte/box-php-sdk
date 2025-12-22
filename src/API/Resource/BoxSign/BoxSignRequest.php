@@ -50,7 +50,7 @@ class BoxSignRequest extends AbstractResource
 
     public int $sender_id;
 
-    public BoxSignFiles $sign_files;
+    public array $sign_files;
 
     public string $signature_color;
 
@@ -58,11 +58,54 @@ class BoxSignRequest extends AbstractResource
 
     public File $signing_log;
 
-    public Files $source_files;
+    public array $source_files;
 
     public BoxSignStatusType $status;
 
     public string $template_id;
+    
+    public function setParentFolder($parent_folder)
+    {
+        if ($parent_folder instanceof Folder) {
+            $this->parent_folder = $parent_folder;
+        } else {
+            $this->parent_folder = new Folder($this->token);
+            $this->parent_folder->hydrate($parent_folder);
+        }
+        return $this;
+    }
+    
+    public function setSignFiles($sign_files)
+    {
+        if ($sign_files instanceof Files) {
+            $this->sign_files = $sign_files;
+        } else {
+            $this->sign_files = new Files();
+            $this->sign_files->hydrate($sign_files);
+        }
+        return $this;
+    }
+    
+    public function setSourceFiles($source_files)
+    {
+        if ($source_files instanceof Files) {
+            $this->source_files = $source_files;
+        } else {
+            $this->source_files = new Files();
+            $this->source_files->hydrate($source_files);
+        }
+        return $this;
+    }
+    
+    public function setStatus($status)
+    {
+        if ($status instanceof BoxSignStatusType) {
+            $this->status = $status;
+        } else {
+            $this->status = BoxSignStatusType::from($status);
+        }
+        return $this;
+    }
     
     public function create_box_sign_request(Folder $parent_folder, array $signers, array $source_files): self|ClientError
     {

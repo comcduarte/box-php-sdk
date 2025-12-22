@@ -176,7 +176,7 @@ class MetadataCascadePolicy extends AbstractResource
      * @param ConflictResolutionType $conflict_resolution
      * @return void|ClientError
      */
-    public function force_apply_metadata_cascade_policy_to_folder(string $metadata_cascade_policy_id, ConflictResolutionType $conflict_resolution): ull|ClientError
+    public function force_apply_metadata_cascade_policy_to_folder(string $metadata_cascade_policy_id, ConflictResolutionType $conflict_resolution): null|ClientError
     {
         $endpoint = 'https://api.box.com/2.0/metadata_cascade_policies/:metadata_cascade_policy_id/apply';
         $params = [
