@@ -144,6 +144,31 @@ class BoxSignRequest extends AbstractResource
         }
     }
     
+    public function list_box_sign_requests(): BoxSignRequests|ClientError
+    {
+        $endpoint = 'https://api.box.com/2.0/sign_requests';
+        $params = [ // -- No Parameters Required --//
+        ];
+        
+        $uri = $this->generate_uri($endpoint, $params);
+        $this->response = $this->get($uri);
+        
+        switch ($this->response->getStatusCode()) {
+            case 200:
+                /**
+                 * A list of Box Doc Gen jobs.
+                 */
+                $requests  = new BoxSignRequests();
+                $requests->hydrate($this->response);
+                return $requests;
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
+    }
+    
     public function cancel_box_sign_request()
     {
         
