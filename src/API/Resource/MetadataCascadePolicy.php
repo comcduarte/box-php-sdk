@@ -37,7 +37,7 @@ class MetadataCascadePolicy extends AbstractResource
         
         if (isset($query)) {
             $endpoint .= '?:query';
-            $params[':query'] = http_build_query($query->getArrayCopy());
+            $params[':query'] = http_build_query($query);
         }
         
         $uri = $this->generate_uri($endpoint, $params);
