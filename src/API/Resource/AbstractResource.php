@@ -119,7 +119,7 @@ abstract class AbstractResource extends BaseResource
      * @param string $uri
      * @param array $data
      */
-    protected function send(string $uri, array $data, string $method)
+    protected function send(string $uri, ?array $data, string $method)
     {
         $this->add_headers();
         
@@ -179,7 +179,7 @@ abstract class AbstractResource extends BaseResource
      * @param array $data
      * @return \Laminas\Http\Response
      */
-    protected function post(string $uri, array $data)
+    protected function post(string $uri, ?array $data)
     {
         return $this->send($uri, $data, self::METHOD_POST);
     }
