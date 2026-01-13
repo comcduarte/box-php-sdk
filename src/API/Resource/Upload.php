@@ -128,7 +128,7 @@ class Upload extends File
      * 
      * @see \comcduarte\Box\API\Resource\AbstractResource::post()
      */
-    protected function post (string $uri, array $data)
+    protected function post (string $uri, ?array $data)
     {
         try {
             $ch = curl_init();
