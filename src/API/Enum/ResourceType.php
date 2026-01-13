@@ -5,6 +5,8 @@ namespace comcduarte\Box\API\Enum;
 Enum ResourceType: string
 {
 
+    case DocGen_Batch = 'docgen_batch';
+    
     case File = 'file';
 
     case Folder = 'folder';
