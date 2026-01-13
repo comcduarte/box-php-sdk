@@ -332,6 +332,14 @@ class Folder extends AbstractResource
         return $this;
     }
     
+    public function setSharedLink($shared_link)
+    {
+        if ($shared_link instanceof \stdClass) {
+            $this->shared_link = $shared_link;
+        } else {
+            $this->shared_link = new \stdClass();
+        }
+    }
     /**
      * Retrieves details for a folder, including the first 100 entries in the folder.
      * Passing sort, direction, offset, and limit parameters in query allows you to manage the list of returned folder items.
