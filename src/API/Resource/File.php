@@ -192,6 +192,15 @@ class File extends AbstractResource implements ArraySerializableInterface
         return $this;
     }
     
+    public function setSharedLink($shared_link)
+    {
+        if ($shared_link instanceof \stdClass) {
+            $this->shared_link = $shared_link;
+        } else {
+            $this->shared_link = new \stdClass();
+        }
+    }
+    
     /**
      * Retrieves the details about a file.
      * @var string|mixed
