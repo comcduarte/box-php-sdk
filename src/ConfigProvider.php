@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Laminas\Box;
+namespace comcduarte\Box;
 
-use Laminas\Box\API\AccessToken;
+use comcduarte\Box\API\AccessToken;
 
 class ConfigProvider
 {

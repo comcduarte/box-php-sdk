@@ -1,75 +1,205 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
-use Laminas\Box\API\RepresentationsTrait;
 use Laminas\Http\Response;
 use Laminas\Stdlib\ArraySerializableInterface;
-use Laminas\Box\API\Exception\ClientErrorException;
+use comcduarte\Box\API\RepresentationsTrait;
+use comcduarte\Box\API\Enum\ResourceType;
+use comcduarte\Box\API\Exception\ClientErrorException;
+use stdClass;
 
 class File extends AbstractResource implements ArraySerializableInterface
 {
-    use HydrationTrait;
     use RepresentationsTrait;
-    
+
     /**
-     * 
      * @var string
      */
     protected $content_type = 'application/json';
-    
+
     /**
-     * 
      * @var string
      */
-    public $id;
-    
+    public ResourceType $type = ResourceType::File;
+
+    public array $allowed_invitee_roles = [];
+
+    public \stdClass $classification;
+
+    public int $comment_count;
+
     /**
-     * 
      * @var string
      */
-    public $type = 'file';
-    
+    public string $content_created_at;
+
+    public string $content_modified_at;
+
+    public string $created_at;
+
+    public User $created_by;
+
+    public string $description;
+
+    public string $disposition_at;
+
+    public string $etag;
+
+    public string $expires_at;
+
+    public \stdClass $expiring_embed_link;
+
+    public string $extension;
+
+    public FileVersion $file_version;
+
+    public bool $has_collaborations;
+
+    public bool $is_accessible_via_shared_link;
+
+    public bool $is_associated_with_app_item;
+
+    public bool $is_externally_owned;
+
+    public bool $is_package;
+
     /**
-     * 
+     *
+     * @todo Item Status should be an enum with values active,trashed,deleted
      * @var string
      */
-    public $content_created_at;
+    public string $item_status;
+
+    /**
+     *
+     * @todo Convert into a Resource
+     * @var stdClass
+     */
+    public \stdClass $lock;
+
+    public array $metadata;
+
+    public string $modified_at;
+
+    public User $modified_by;
+
+    public string $name;
+
+    public User $owned_by;
+
+    public Folder $parent;
+
+    public Items $path_collection;
+
+    /**
+     * @todo Convert into a Resource
+     * @var stdClass
+     */
+    public \stdClass $permissions;
+
+    public string $purged_at;
+
+    public string $sequence_id;
+
+    public string $sha1;
+
+    /**
+     * @todo Convert into a Resource
+     */
+    public \stdClass $shared_link;
+
+    public array $shared_link_permission_options;
+
+    public int $size;
+
+    public array $tags;
     
+    public string $trashed_at;
     
-    public $created_at;
+    public string $uploader_display_name;
+    
+    public string $version_number;
     
     /**
-     * 
+     * @todo Convert into a Resource.
+     * @var stdClass
      */
-    public $created_by;
-    public $description;
-    public $etag;
+    public \stdClass $watermark_info;
     
-    /**
-     * 
-     */
-    public $file_version;
-    public $item_status;
-    public $modified_at;
-    public $name;
-    public $owned_by;
-    public $parent;
+    public function setFileVersion($file_version)
+    {
+        if ($file_version instanceof FileVersion) {
+            $this->file_version = $file_version;
+        } else {
+            $this->file_version = new FileVersion($this->token);
+            $this->file_version->hydrate($file_version);
+        }
+        return $this;        
+    }
     
-    /**
-     */
-    public $path_collection;
+    public function setParent($parent): self
+    {
+        if ($parent instanceof Folder) {
+            $this->parent = $parent;
+        } else {
+            $this->parent = new Folder($this->token);
+            $this->parent->hydrate($parent);
+        }
+        return $this;
+    }
     
-    public $purged_at;
-    public $sequence_id;
-    public $sha1;
+    public function setPathCollection($path_collection): self
+    {
+        if ($path_collection instanceof Items) {
+            $this->path_collection = $path_collection;
+        } else {
+            $this->path_collection = new Items();
+            $this->path_collection->hydrate($path_collection);
+        }
+        return $this;
+    }
     
-    /**
-     * 
-     */
-    public $shared_link;
+    public function setCreatedBy($created_by)
+    {
+        if ($created_by instanceof User) {
+            $this->created_by = $created_by;
+        } else {
+            $this->created_by = new User($this->token);
+            $this->created_by->hydrate($created_by);
+        }
+        return $this;
+    }
     
-    public $size;
-    public $trashed_at;
+    public function setModifiedBy($modified_by)
+    {
+        if ($modified_by instanceof User) {
+            $this->created_by = $modified_by;
+        } else {
+            $this->modified_by = new User($this->token);
+            $this->modified_by->hydrate($modified_by);
+        }
+        return $this;
+    }
+    
+    public function setOwnedBy($owned_by)
+    {
+        if ($owned_by instanceof User) {
+            $this->created_by = $owned_by;
+        } else {
+            $this->owned_by = new User($this->token);
+            $this->owned_by->hydrate($owned_by);
+        }
+        return $this;
+    }
+    
+    public function setSharedLink($shared_link)
+    {
+        if ($shared_link instanceof \stdClass) {
+            $this->shared_link = $shared_link;
+        } else {
+            $this->shared_link = new \stdClass();
+        }
+    }
     
     /**
      * Retrieves the details about a file.
@@ -307,11 +437,7 @@ class File extends AbstractResource implements ArraySerializableInterface
         
         if (isset($query)) {
             $endpoint .= '?:query';
-            $params[':query'] = '';
-            
-            foreach ($query as $field => $value) {
-                $params[':query'] .= sprintf('%s=%s', $field, $value);
-            }
+            $params[':query'] = http_build_query($query->getArrayCopy());
         }
         
         $uri = strtr($endpoint, $params);
@@ -365,9 +491,11 @@ class File extends AbstractResource implements ArraySerializableInterface
         switch ($this->response->getStatusCode())
         {
             case 200:
-                return $this->getResponse();
             case 202:
-                throw new \Exception('202 Retry Error');
+                /**
+                 * Document not ready.  Retry.
+                 */
+                return $this->getResponse();
             default:
                 /**
                  * An unexpected client error.
@@ -376,11 +504,15 @@ class File extends AbstractResource implements ArraySerializableInterface
         }
     }
     
-    public function request_desired_representation(string $type = null, string $size = null)
+    public function request_desired_representation(string $type, ?string $size = null)
     {
         $this->headers->clearHeaders();
-        $properties = sprintf('[%s?dimensions=%s]', $type, $size);
-        $this->headers->addHeaderLine('x-rep-hints',$properties);
+        if ($size) {
+            $properties = sprintf('[%s?dimensions=%s]', $type, $size);
+        } else {
+            $properties = sprintf('[%s]', $type);
+        }
+        $this->headers->addHeaderLine('x-rep-hints', $properties);
         return $this->get_file_information($this->id);
     }
 
@@ -388,7 +520,7 @@ class File extends AbstractResource implements ArraySerializableInterface
      * Utilizes update_file API Call to rename file.
      * @param string $file_id
      * @param string $name
-     * @return \Laminas\Box\API\Resource\File
+     * @return \comcduarte\Box\API\Resource\File
      */
     public function rename_file(string $file_id, string $name)
     {
@@ -407,7 +539,7 @@ class File extends AbstractResource implements ArraySerializableInterface
      * Utilizes update_file API Call to move file to a new folder.
      * @param string $file_id
      * @param string $folder_id
-     * @return \Laminas\Box\API\Resource\File
+     * @return \comcduarte\Box\API\Resource\File
      */
     public function move_file(string $file_id, string $folder_id)
     {

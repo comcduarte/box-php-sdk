@@ -1,55 +1,54 @@
 <?php
-namespace Laminas\Box\API\Resource;
+declare(strict_types=1);
+
+namespace comcduarte\Box\API\Resource;
+
+use Laminas\Http\Response;
+use comcduarte\Box\API\Enum\ResourceType;
 
 class MetadataTemplate extends AbstractResource
 {
-    /**
-     * 
-     * @var string
-     */
-    protected $content_type = 'application/json';
-    
     /**
      * The ID of the metadata template.
      * 
      * @var string
      */
-    public $id;
+    public string $id = "";
     
     /**
      * Value is always metadata_template.
      * @var string
      */
-    public $type = 'metadata_template';
+    public ResourceType $type = ResourceType::Metadata_Template;
     
     /**
      * Whether or not to include the metadata when a file or folder is copied.
      * 
      * @var boolean
      */
-    public $copyInstanceOnItemCopy;
+    public bool $copyInstanceOnItemCopy = false;
     
     /**
      * The display name of the template. This can be seen in the Box web app and mobile apps.
      * 
      * @var string
      */
-    public $displayName;
+    public string $displayName = "";
     
     /**
      * An ordered list of template fields which are part of the template. 
      * Each field can be a regular text field, date field, number field, as well as a single or multi-select list.
      * 
-     * @var \Laminas\Box\API\Resource\Field[]
+     * @var array
      */
-    public $fields;
+    public array $fields = [];
     
     /**
      * Defines if this template is visible in the Box web app UI, or if it is purely intended for usage through the API.
      * 
      * @var boolean
      */
-    public $hidden;
+    public bool $hidden = false;
     
     /**
      * The scope of the metadata template can either be global or enterprise_*. 
@@ -59,7 +58,7 @@ class MetadataTemplate extends AbstractResource
      * 
      * @var string
      */
-    public $scope;
+    public string $scope = 'enterprise';
     
     /**
      * A unique identifier for the template. This identifier is unique across the scope of the enterprise 
@@ -67,7 +66,7 @@ class MetadataTemplate extends AbstractResource
      * 
      * @var string
      */
-    public $templateKey;
+    public string $templateKey = "";
     
     public function find_metadata_template_by_instance_id() {}
     
@@ -93,6 +92,27 @@ class MetadataTemplate extends AbstractResource
         ];
         $uri = strtr($endpoint, $params);
         $this->response = $this->get($uri);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                /**
+                 * Returns the metadata template matching the scope and template name.
+                 */
+                $this->hydrate($this->response);
+                return $this;
+            case 400:
+                /**
+                 * Returned if any of the request parameters are not valid.
+                 * bad_request: Often returned when the scope of the template is not recognised. Please make sure to use either enterprise or global as the scope value.
+                 */
+            case 404:
+                /**
+                 * Returned when a template with the given scope and template_key can not be found.
+                 */
+            default:
+                return $this->error();
+        }
     }
     
     /**
@@ -115,8 +135,10 @@ class MetadataTemplate extends AbstractResource
     
     /**
      * 
+     * @param string $scope
+     * @return MetadataTemplates|ClientError
      */
-    private function list_all_metadata_templates(string $scope)
+    private function list_all_metadata_templates(string $scope): MetadataTemplates | ClientError
     {
         $endpoint = "https://api.box.com/2.0/metadata_templates/$scope";
         
@@ -152,7 +174,7 @@ class MetadataTemplate extends AbstractResource
      *
      * @return MetadataTemplates
      */
-    public function list_all_global_metadata_templates()
+    public function list_all_global_metadata_templates(): MetadataTemplates
     {
         return $this->list_all_metadata_templates('global');
     }
@@ -161,12 +183,143 @@ class MetadataTemplate extends AbstractResource
      * 
      * @return MetadataTemplates
      */
-    public function list_all_metadata_templates_for_enterprise()
+    public function list_all_metadata_templates_for_enterprise(): MetadataTemplates
     {
         return $this->list_all_metadata_templates('enterprise');
     }
     
-    public function create_metadata_template() {}
-    public function update_metadata_template() {}
-    public function remove_metadata_template() {}
+    /**
+     * scope: This value needs to be set to enterprise, as global scopes can not be created by applications.
+     * 
+     * @return MetadataTemplate|ClientError
+     */
+    public function create_metadata_template(): MetadataTemplate | ClientError
+    {
+        $endpoint = 'https://api.box.com/2.0/metadata_templates/schema';
+        $params = [
+            //-- No Parameters are required. --//
+        ];
+        
+        $data = [
+            'scope' => $this->scope,
+            'displayName' => $this->displayName,
+            'fields' => $this->fields,
+            'hidden' => $this->hidden,
+            'templateKey' => $this->templateKey,
+        ];
+        
+        $uri = strtr($endpoint, $params);
+        $this->response = $this->post($uri, $data);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 201:
+                /**
+                 * The schema representing the metadata template created.
+                 */
+                $this->hydrate($this->response);
+                return $this;
+            case 400:
+                /**
+                 * Returned if the request parameters or body is not valid.
+                 * bad_request when the body does not contain a valid request. In many cases this response will include extra details on what fields are missing.
+                 */
+            case 403:
+                /**
+                 * Returned when the user does not have the permission to create the metadata template. This can happen for a few reasons, most commonly when the user does not have (co-)admin permissions, or the application tries to create a template with the global scope.
+                 */
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
+    }
+    
+    public function update_metadata_template(string $scope, string $template_key): MetadataTemplate | ClientError 
+    {
+        $endpoint = 'https://api.box.com/2.0/metadata_templates/:scope/:template_key/schema';
+        $params = [
+            ':scope' => $scope,
+            ':template_key' => $template_key
+        ];
+        
+        $data = [
+//             "op": "editField",
+//             "fieldKey": "category",
+//             "data": {
+//              "displayName": "Customer Group"
+//             }
+        
+        ];
+        
+        $uri = strtr($endpoint, $params);
+        $this->response = $this->put($uri, $data);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                /**
+                 * Returns the updated metadata template, with the custom template data included.
+                 */
+                return $this;
+            case 400:
+                /**
+                 * The request body does not contain a valid metadata schema.
+                 */
+            case 403:
+                /**
+                 * The request body contains a scope that the user is not allowed to create templates for.
+                 */
+            case 404:
+                /**
+                 * The requested template could not be found.
+                 */
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
+    }
+    
+    /**
+     * 
+     * @param string $scope
+     * @param string $template_key
+     * @return Response|ClientError
+     */
+    public function remove_metadata_template(string $scope, string $template_key): Response | ClientError
+    {
+        $endpoint = 'https://api.box.com/2.0/metadata_templates/:scope/:template_key/schema';
+        $params = [
+            ':scope' => $scope,
+            ':template_key' => $template_key
+        ];
+        
+        $uri = strtr($endpoint, $params);
+        $this->response = $this->delete($uri);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 204:
+                /**
+                 * Returns an empty response when the metadata template is successfully deleted.
+                 */
+                return $this->response;
+            case 400:
+                /**
+                 * Request body does not contain a valid metadata schema.
+                 */
+            case 403:
+                /**
+                 * Request body contains a scope that the user is not allowed to create a template for.
+                 */
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
+    }
 }

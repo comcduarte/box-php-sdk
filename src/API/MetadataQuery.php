@@ -1,8 +1,8 @@
 <?php
-namespace Laminas\Box\API;
+namespace comcduarte\Box\API;
 
-use Laminas\Box\API\Resource\AbstractResource;
-use Laminas\Box\API\Resource\MetadataQuerySearchResults;
+use comcduarte\Box\API\Resource\AbstractResource;
+use comcduarte\Box\API\Resource\MetadataQuerySearchResults;
 
 class MetadataQuery extends AbstractResource
 {
@@ -68,7 +68,7 @@ class MetadataQuery extends AbstractResource
      * @param array $order_by
      * @param string $query
      * @param array $query_params
-     * @return \Laminas\Box\API\Resource\MetadataQuerySearchResults|\Laminas\Box\API\Resource\ClientError
+     * @return \comcduarte\Box\API\Resource\MetadataQuerySearchResults|\comcduarte\Box\API\Resource\ClientError
      */
     public function metadata_query(
         string $ancestor_folder_id = null, 

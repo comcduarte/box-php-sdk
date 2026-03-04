@@ -1,6 +1,8 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
+use Laminas\Stdlib\ArraySerializableInterface;
+use comcduarte\Box\API\Enum\ResourceType;
 
 /**
  * 
@@ -9,7 +11,7 @@ namespace Laminas\Box\API\Resource;
  * 
  * POST https://api.box.com/2.0/files/[:file_id]/metadata/[:scope]/[:template_key]
  */
-class MetadataInstance extends File
+class MetadataInstance extends AbstractResource implements ArraySerializableInterface
 {
     public const API_FUNC = '/metadata/';
     
@@ -18,21 +20,14 @@ class MetadataInstance extends File
      * 
      * @var boolean
      */
-    public $canEdit;
-    
-    /**
-     * A UUID to identify the metadata instance.
-     * 
-     * @var string
-     */
-    public $id;
+    public bool $canEdit;
     
     /**
      * The identifier of the item that this metadata instance has been attached to. This combines the type and the id of the parent in the form {type}_{id}.
      * 
      * @var string
      */
-    public $parent;
+    public string $parent;
     
     /**
      * An ID for the scope in which this template has been applied. This will be enterprise_{enterprise_id} for templates defined for use in this enterprise, 
@@ -40,44 +35,44 @@ class MetadataInstance extends File
      * 
      * @var string
      */
-    public $scope;
+    public string $scope;
     
     /**
      * The name of the template
      * 
      * @var string
      */
-    public $template;
+    public string $template;
     
     /**
      * A unique identifier for the "type" of this instance. This is an internal system property and should not be used by a client application.
-     * 
+     * Removed: conflicts with BaseResource::type
      * @var string
      */
-    public $type;
+    public ResourceType $type = ResourceType::Metadata_Instance;
     
     /**
      * The last-known version of the template of the object. This is an internal system property and should not be used by a client application.
      * 
      * @var integer
      */
-    public $typeVersion;
+    public int $typeVersion;
     
     /**
      * The version of the metadata instance. This version starts at 0 and increases every time a user-defined property is modified.
      * 
      * @var integer
      */
-    public $version;
+    public int $version;
     
     /**
      * @param string $endpoint
      * @param array $params
      * @param string $template_key
      * @param array $data
-     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     * @return \comcduarte\Box\API\Resource\MetadataInstance|\comcduarte\Box\API\Resource\ClientError
      */
-    private function create_metadata_instance(string $endpoint, array $params, $data)
+    private function create_metadata_instance(string $endpoint, array $params, array $data)
     {
         $uri = strtr($endpoint, $params);
         $this->response = $this->post($uri, $data);
@@ -87,12 +82,11 @@ class MetadataInstance extends File
                 /**
                  * Returns the instance of the template that was applied to the file/folder, including the data that was applied to the template.
                  */
-                $metadata_instance = new MetadataInstance($this->token);
                 
                 /**
-                * API returns global properties with prefix of $
-                * Remove $ and set properties in array before hydrating
-                */
+                 * API returns global properties with prefix of $
+                 * Remove $ and set properties in array before hydrating
+                 */
                 $data = json_decode($this->response->getContent(), true);
                 foreach ($data as $key => $value) {
                     $property = trim($key, '$');
@@ -103,8 +97,8 @@ class MetadataInstance extends File
                     
                 }
                 
-                $metadata_instance->hydrate($data);
-                return $metadata_instance;
+                $this->hydrate($data);
+                return $this;
             case 400:
                 /**
                  * Returns an error when the request body is not valid.
@@ -129,7 +123,7 @@ class MetadataInstance extends File
      * 
      * @param string $endpoint
      * @param array $params
-     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     * @return \comcduarte\Box\API\Resource\MetadataInstance|\comcduarte\Box\API\Resource\ClientError
      */
     private function list_metadata_instances(string $endpoint, array $params)
     {
@@ -166,7 +160,7 @@ class MetadataInstance extends File
      * 
      * @param string $endpoint
      * @param array $params
-     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     * @return \comcduarte\Box\API\Resource\MetadataInstance|\comcduarte\Box\API\Resource\ClientError
      */
     private function get_metadata_instance(string $endpoint, array $params)
     {
@@ -178,7 +172,6 @@ class MetadataInstance extends File
                 /**
                  * An instance of the metadata template that includes additional "key:value" pairs defined by the user or an application.
                  */
-                $metadata_instance = new MetadataInstance($this->token);
                 
                 /**
                  * API returns global properties with prefix of $
@@ -194,8 +187,8 @@ class MetadataInstance extends File
                     
                 }
                 
-                $metadata_instance->hydrate($data);
-                return $metadata_instance;
+                $this->hydrate($data);
+                return $this;
             case 403:
                 /**
                  * Returned when the request parameters are not valid.
@@ -216,8 +209,7 @@ class MetadataInstance extends File
         }
     }
     
-    
-    private function update_metadata_instance(string $endpoint, array $params, $data)
+    private function update_metadata_instance(string $endpoint, array $params, array $data)
     {
         $this->content_type = 'application/json-patch+json';
         
@@ -229,12 +221,6 @@ class MetadataInstance extends File
                 /**
                  * Returns the updated metadata template instance, with the custom template data included.
                  */
-                $metadata_instance = new MetadataInstance($this->token);
-                
-                /**
-                 * API returns global properties with prefix of $
-                 * Remove $ and set properties in array before hydrating
-                 */
                 $data = json_decode($this->response->getContent(), true);
                 foreach ($data as $key => $value) {
                     $property = trim($key, '$');
@@ -245,8 +231,8 @@ class MetadataInstance extends File
                     
                 }
                 
-                $metadata_instance->hydrate($data);
-                return $metadata_instance;
+                $this->hydrate($data);
+                return $this;
             case 400:
                 /**
                  * Returns an error when the request body is not valid.
@@ -267,7 +253,7 @@ class MetadataInstance extends File
      * 
      * @param string $endpoint
      * @param array $params
-     * @return NULL|\Laminas\Box\API\Resource\ClientError
+     * @return NULL|\comcduarte\Box\API\Resource\ClientError
      */
     private function remove_metadata_instance(string $endpoint, array $params)
     {
@@ -309,7 +295,7 @@ class MetadataInstance extends File
      * @param string $scope
      * @param string $template_key
      */
-    public function create_metadata_instance_on_file(string $file_id, string $scope = 'global', string $template_key, $data)
+    public function create_metadata_instance_on_file(string $file_id, string $scope, string $template_key, array $data)
     {
         if (!isset($file_id) | !isset($template_key)) {
             return FALSE;
@@ -328,7 +314,7 @@ class MetadataInstance extends File
     /**
      * Retrieves all metadata for a given file.
      * @param string $file_id
-     * @return @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     * @return @return \comcduarte\Box\API\Resource\MetadataInstance|\comcduarte\Box\API\Resource\ClientError
      */
     public function list_metadata_instances_on_file(string $file_id)
     {
@@ -350,9 +336,9 @@ class MetadataInstance extends File
      * @param string $file_id
      * @param string $scope
      * @param string $template_key
-     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     * @return \comcduarte\Box\API\Resource\MetadataInstance|\comcduarte\Box\API\Resource\ClientError
      */
-    public function get_metadata_instance_on_file(string $file_id, string $scope = 'global', string $template_key)
+    public function get_metadata_instance_on_file(string $file_id, string $scope, string $template_key)
     {
         if (!isset($file_id) | !isset($template_key)) {
             return FALSE;
@@ -378,9 +364,9 @@ class MetadataInstance extends File
      * @param string $scope
      * @param string $template_key
      * @param array $data
-     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     * @return \comcduarte\Box\API\Resource\MetadataInstance|\comcduarte\Box\API\Resource\ClientError
      */
-    public function update_metadata_instance_on_file(string $file_id, string $scope = 'global', string $template_key, $data)
+    public function update_metadata_instance_on_file(string $file_id, string $scope, string $template_key, array $data)
     {
         if (!isset($file_id) | !isset($template_key)) {
             return FALSE;
@@ -396,7 +382,7 @@ class MetadataInstance extends File
         return $this->update_metadata_instance($endpoint, $params, $data);
     }
     
-    public function remove_metadata_instance_from_file(string $file_id, string $scope = 'global', string $template_key)
+    public function remove_metadata_instance_from_file(string $file_id, string $scope, string $template_key)
     {
         if (!isset($file_id) | !isset($template_key)) {
             return FALSE;
@@ -412,7 +398,7 @@ class MetadataInstance extends File
         return $this->remove_metadata_instance($endpoint, $params);
     }
     
-    public function create_metadata_instance_on_folder(string $folder_id, string $scope = 'global', string $template_key, $data)
+    public function create_metadata_instance_on_folder(string $folder_id, string $scope, string $template_key, array $data)
     {
         if (!isset($folder_id) | !isset($template_key)) {
             return FALSE;
@@ -447,9 +433,9 @@ class MetadataInstance extends File
      * @param string $folder_id
      * @param string $scope
      * @param string $template_key
-     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     * @return \comcduarte\Box\API\Resource\MetadataInstance|\comcduarte\Box\API\Resource\ClientError
      */
-    public function get_metadata_instance_on_folder(string $folder_id, string $scope = 'global', string $template_key)
+    public function get_metadata_instance_on_folder(string $folder_id, string $scope, string $template_key)
     {
         if (!isset($folder_id) | !isset($template_key)) {
             return FALSE;
@@ -474,9 +460,9 @@ class MetadataInstance extends File
      * @param string $scope
      * @param string $template_key
      * @param array $data
-     * @return \Laminas\Box\API\Resource\MetadataInstance|\Laminas\Box\API\Resource\ClientError
+     * @return \comcduarte\Box\API\Resource\MetadataInstance|\comcduarte\Box\API\Resource\ClientError
      */
-    public function update_metadata_instance_on_folder(string $folder_id, string $scope = 'global', string $template_key, $data)
+    public function update_metadata_instance_on_folder(string $folder_id, string $scope, string $template_key, array $data)
     {
         if (!isset($folder_id) | !isset($template_key)) {
             return FALSE;
@@ -492,7 +478,7 @@ class MetadataInstance extends File
         return $this->update_metadata_instance($endpoint, $params, $data);
     }
     
-    public function remove_metadata_instance_from_folder(string $folder_id, string $scope = 'global', string $template_key)
+    public function remove_metadata_instance_from_folder(string $folder_id, string $scope, string $template_key)
     {
         if (!isset($folder_id) | !isset($template_key)) {
             return FALSE;

@@ -1,9 +1,9 @@
 <?php
-namespace Laminas\Box\Service;
+namespace comcduarte\Box\Service;
 
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
-use Laminas\Box\API\AccessToken;
+use comcduarte\Box\API\AccessToken;
 
 class DefaultAccessTokenFactory implements FactoryInterface
 {

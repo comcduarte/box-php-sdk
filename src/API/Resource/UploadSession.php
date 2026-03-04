@@ -1,5 +1,5 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
 use Laminas\Json\Json;
 
@@ -127,7 +127,7 @@ class UploadSession extends AbstractResource
     
     /**
      * Updates a chunk of an upload session for a file.
-     * Each part’s size must be exactly equal in size to the part size specified in the upload session that was created. 
+     * Each partï¿½s size must be exactly equal in size to the part size specified in the upload session that was created. 
      * One exception is the last part of the file, as this is allowed to be smaller.
      * 
      * @param string $upload_session_id

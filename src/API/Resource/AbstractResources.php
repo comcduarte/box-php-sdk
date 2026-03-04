@@ -1,8 +1,10 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
 abstract class AbstractResources implements \Countable
 {
+    use HydrationTrait;
+    
     /**
      * Array of Resources
      * @var array

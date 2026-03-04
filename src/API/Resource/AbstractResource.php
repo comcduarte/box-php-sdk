@@ -1,14 +1,13 @@
 <?php
-namespace Laminas\Box\API\Resource;
+namespace comcduarte\Box\API\Resource;
 
-use Laminas\Box\API\AccessToken;
 use Laminas\Http\Client;
 use Laminas\Http\Headers;
 use Laminas\Http\Response;
 use Laminas\Http\Client\Adapter\Curl;
-use Laminas\Hydrator\ArraySerializableHydrator;
+use comcduarte\Box\API\AccessToken;
 
-abstract class AbstractResource
+abstract class AbstractResource extends BaseResource
 {
     /**#@+
      *
@@ -62,6 +61,8 @@ abstract class AbstractResource
      */
     protected $uri;
     
+    public string $_version = '2024.0';
+    
     public function __construct($access_token = null)
     {
         if ($this->requires_authorization) {
@@ -80,8 +81,7 @@ abstract class AbstractResource
     
     protected function delete(string $uri)
     {
-        $this->add_authorization();
-        $this->add_content_type();
+        $this->add_headers();
         
         $client = new Client();
         $client->setOptions([
@@ -99,7 +99,7 @@ abstract class AbstractResource
     
     protected function get(string $uri)
     {
-        $this->add_authorization();
+        $this->add_headers();
         
         $client = new Client();
         $client->setOptions([
@@ -119,10 +119,9 @@ abstract class AbstractResource
      * @param string $uri
      * @param array $data
      */
-    protected function send(string $uri, array $data, string $method)
+    protected function send(string $uri, ?array $data, string $method)
     {
-        $this->add_authorization();
-        $this->add_content_type();
+        $this->add_headers();
         
         $client = new Client();
         $client->setOptions([
@@ -180,7 +179,7 @@ abstract class AbstractResource
      * @param array $data
      * @return \Laminas\Http\Response
      */
-    protected function post(string $uri, array $data)
+    protected function post(string $uri, ?array $data)
     {
         return $this->send($uri, $data, self::METHOD_POST);
     }
@@ -199,6 +198,23 @@ abstract class AbstractResource
             $this->headers->addHeaderLine('Content-Type', $this->content_type);
         }
         return $this;
+    }
+    
+    private function add_version()
+    {
+        if (isset($this->_version)) {
+            $this->headers->addHeaderLine(sprintf('box-version: %s', $this->_version));
+        }
+        return $this;
+    }
+    
+    private function add_headers()
+    {
+        $this
+            ->add_authorization()
+            ->add_content_type()
+            ->add_version();
+        return $this;        
     }
     
     public function getResponse()
@@ -229,39 +245,6 @@ abstract class AbstractResource
         return strtr($endpoint, $params);
     }
     
-    public function exchangeArray(array $array)
-    {
-        foreach (array_keys(get_object_vars($this)) as $var) {
-            if (!empty($array[$var])) {
-                $this->$var = $array[$var];
-            }
-        }
-    }
-    
-    public function getArrayCopy()
-    {
-        $data = [];
-        foreach (array_keys(get_object_vars($this)) as $var) {
-            $data[$var] = $this->{$var};
-        }
-        return $data;
-    }
-    
-    public function hydrate($response)
-    {
-        $hydrator = new ArraySerializableHydrator();
-        
-        if (is_a($response, Response::class)) {
-            $data = json_decode($response->getContent(), true);
-            $hydrator->hydrate($data, $this);
-        } elseif (is_array($response)) {
-            $hydrator->hydrate($response, $this);
-        } else {
-            throw new \Exception('Invalid parameter in hydrate function.  Must be of type array or Response.');
-        }
-        return $this;
-    }
-
     /**
      * @return ClientError | OAuth20Error
      */
