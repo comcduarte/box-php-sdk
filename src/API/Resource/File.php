@@ -6,11 +6,13 @@ use Laminas\Stdlib\ArraySerializableInterface;
 use comcduarte\Box\API\RepresentationsTrait;
 use comcduarte\Box\API\Enum\ResourceType;
 use comcduarte\Box\API\Exception\ClientErrorException;
+use comcduarte\Box\API\Resource\SharedLink\SharedLinkTrait;
 use stdClass;
 
 class File extends AbstractResource implements ArraySerializableInterface
 {
     use RepresentationsTrait;
+    use SharedLinkTrait;
 
     /**
      * @var string
@@ -103,11 +105,6 @@ class File extends AbstractResource implements ArraySerializableInterface
 
     public string $sha1;
 
-    /**
-     * @todo Convert into a Resource
-     */
-    public \stdClass $shared_link;
-
     public array $shared_link_permission_options;
 
     public int $size;
@@ -125,6 +122,12 @@ class File extends AbstractResource implements ArraySerializableInterface
      * @var stdClass
      */
     public \stdClass $watermark_info;
+    
+    public function __construct($access_token = null)
+    {
+        parent::__construct($access_token);
+        $this->shared_link = new SharedLink();
+    }
     
     public function setFileVersion($file_version)
     {
@@ -190,15 +193,6 @@ class File extends AbstractResource implements ArraySerializableInterface
             $this->owned_by->hydrate($owned_by);
         }
         return $this;
-    }
-    
-    public function setSharedLink($shared_link)
-    {
-        if ($shared_link instanceof \stdClass) {
-            $this->shared_link = $shared_link;
-        } else {
-            $this->shared_link = new \stdClass();
-        }
     }
     
     /**

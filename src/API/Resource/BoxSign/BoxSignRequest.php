@@ -8,6 +8,7 @@ use comcduarte\Box\API\Resource\File;
 use comcduarte\Box\API\Resource\Files;
 use comcduarte\Box\API\Resource\Folder;
 use comcduarte\Box\API\Resource\ClientError;
+use comcduarte\Box\API\Exception\ClientErrorException;
 
 class BoxSignRequest extends AbstractResource
 {
@@ -64,6 +65,11 @@ class BoxSignRequest extends AbstractResource
 
     public string $template_id;
     
+    public function getParentFolder(): Folder
+    {
+        return $this->parent_folder;
+    }
+    
     public function setParentFolder($parent_folder)
     {
         if ($parent_folder instanceof Folder) {
@@ -73,6 +79,11 @@ class BoxSignRequest extends AbstractResource
             $this->parent_folder->hydrate($parent_folder);
         }
         return $this;
+    }
+    
+    public function getSignFiles()
+    {
+        return $this->sign_files;
     }
     
     public function setSignFiles($sign_files)
@@ -86,6 +97,27 @@ class BoxSignRequest extends AbstractResource
         return $this;
     }
     
+    public function getSigningLog(): File
+    {
+        return $this->signing_log;
+    }
+    
+    public function setSigningLog($signing_log)
+    {
+        if ($signing_log instanceof File) {
+            $this->signing_log = $signing_log;
+        } else {
+            $this->signing_log = new File($this->token);
+            $this->signing_log->hydrate($signing_log);
+        }
+        return $this;
+    }
+    
+    public function getSourceFiles()
+    {
+        return $this->source_files;
+    }
+    
     public function setSourceFiles($source_files)
     {
         if ($source_files instanceof Files) {
@@ -95,6 +127,11 @@ class BoxSignRequest extends AbstractResource
             $this->source_files->hydrate($source_files);
         }
         return $this;
+    }
+    
+    public function getStatus()
+    {
+        return $this->status;
     }
     
     public function setStatus($status)
@@ -144,6 +181,40 @@ class BoxSignRequest extends AbstractResource
         }
     }
     
+    public function get_box_sign_request_by_id(string $sign_request_id): BoxSignRequest
+    {
+        if (!isset($sign_request_id)) {
+            throw new ClientErrorException('No sign_request_id parameter.');
+        }
+        
+        $endpoint = 'https://api.box.com/2.0/sign_requests/:sign_request_id';
+        $params = [
+            ':sign_request_id' => $sign_request_id,
+        ];
+        
+        $uri = strtr($endpoint, $params);
+        $this->response = $this->get($uri);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                /**
+                 * Returns a signature request.
+                 */
+                $this->hydrate($this->response);
+                return $this;
+            case 404:
+                /**
+                 * Returns an error when the signature request cannot be found, the user does not have access to the signature request, or sign_files and/or parent_folder is deleted.
+                 */
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
+    }
+    
     public function list_box_sign_requests(): BoxSignRequests|ClientError
     {
         $endpoint = 'https://api.box.com/2.0/sign_requests';
@@ -174,8 +245,68 @@ class BoxSignRequest extends AbstractResource
         
     }
     
-    public function resend_box_sign_request()
+    public function resend_box_sign_request(string $sign_request_id): self|ClientError
     {
+        $endpoint = 'https://api.box.com/2.0/sign_requests/:sign_request_id/resend';
         
+        $params = [
+            ':sign_request_id' => $sign_request_id,
+        ];
+        
+        $uri = strtr($endpoint, $params);
+        $this->response = $this->post($uri, null);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 202:
+                /**
+                 * Returns an empty response when the API call was successful. The email notifications will be sent asynchronously.
+                 */
+                return $this;
+            case 404:
+                /**
+                 * Returns an error when the signature request cannot be found or the user does not have access to the signature request.
+                 */
+            default:
+                /**
+                 * An unexpected client error
+                 */
+                return $this->error();
+        }
+    }
+    
+    public function jsonSerialize(): mixed
+    {
+        $data = parent::jsonSerialize();
+        
+        foreach (array_keys(get_object_vars($this)) as $property) {
+            $reflectionProperty = new \ReflectionProperty($this, $property);
+            if ($reflectionProperty->hasType()) {
+                //-- Property has a declared type --//
+                $reflectionType = $reflectionProperty->getType();
+                switch ($reflectionType)
+                {
+                    case 'string':
+                    case 'array':
+                    case 'int':
+                    case 'bool':
+                        $data[$property] = $this->$property;
+                        break;
+                    default:
+                        $property = lcfirst(str_replace('_', '', ucwords($property, '_')));
+                        $getter   = sprintf('get%s', ucfirst($property));
+                        $callable = [$this, $getter];
+                        if (!is_callable($callable)) {
+                            throw new \Exception(
+                                sprintf('Unable to call %s', $getter)
+                                );
+                        }
+                        $data[$property] = call_user_func($callable);
+                        break;
+                }
+            } 
+        }
+        
+        return $data;
     }
 }

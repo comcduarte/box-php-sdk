@@ -3,10 +3,12 @@ namespace comcduarte\Box\API\Resource;
 
 use comcduarte\Box\API\RequestExtraFieldsTrait;
 use comcduarte\Box\API\Enum\ResourceType;
+use comcduarte\Box\API\Resource\SharedLink\SharedLinkTrait;
 
 class Folder extends AbstractResource
 {
     use RequestExtraFieldsTrait;
+    use SharedLinkTrait;
     
     public const API_FUNC = '/folders/';
     
@@ -200,13 +202,6 @@ class Folder extends AbstractResource
     public string $sequence_id;
     
     /**
-     * The shared link for this folder. This will be [null] if no shared link has been created for this folder.
-     * 
-     * @var object
-     */
-    public \stdClass $shared_link;
-    
-    /**
      * The folder size in bytes.
      * Be careful parsing this integer as its value can get very large.
      * 
@@ -248,6 +243,7 @@ class Folder extends AbstractResource
     {
         parent::__construct($access_token);
         $this->item_collection = new Items();
+        $this->shared_link = new SharedLink();
         return $this;
     }
     
@@ -332,14 +328,6 @@ class Folder extends AbstractResource
         return $this;
     }
     
-    public function setSharedLink($shared_link)
-    {
-        if ($shared_link instanceof \stdClass) {
-            $this->shared_link = $shared_link;
-        } else {
-            $this->shared_link = new \stdClass();
-        }
-    }
     /**
      * Retrieves details for a folder, including the first 100 entries in the folder.
      * Passing sort, direction, offset, and limit parameters in query allows you to manage the list of returned folder items.
