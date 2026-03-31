@@ -65,6 +65,11 @@ class MetadataInstance extends AbstractResource implements ArraySerializableInte
      */
     public int $version;
     
+    public function setType($type) 
+    {
+        parent::setType(ResourceType::Metadata_Instance->value);
+    }
+    
     /**
      * @param string $endpoint
      * @param array $params

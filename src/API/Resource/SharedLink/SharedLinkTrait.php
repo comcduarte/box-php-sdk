@@ -90,6 +90,84 @@ trait SharedLinkTrait
         return $this->add_shared_link($endpoint, $params);
     }
     
+    public function get_shared_link(string $file_id = null, Query $query = null)
+    {
+        if (!isset($file_id)) {
+            return new ClientErrorException('Required Parameter Missing.');
+        }
+        
+        $endpoint = 'https://api.box.com/2.0/files/:file_id#get_shared_link';
+        $params = [
+            ':file_id' => $file_id,
+        ];
+        
+        if (isset($query)) {
+            $endpoint .= '?:query';
+            $params[':query'] = http_build_query($query->getArrayCopy());
+        }
+        
+        $uri = $this->generate_uri($endpoint, $params);
+        $this->response = $this->get($uri);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                $this->hydrate($this->getResponse());
+                return $this;
+            case 304:
+                /**
+                 * @TODO Populate Error Responses.
+                 */
+            case 401:
+            case 404:
+            case 405:
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
+    }
+    
+    public function remove_shared_link(string $file_id = null)
+    {
+        if (!isset($file_id)) {
+            return new ClientErrorException('Required Parameter Missing.');
+        }
+        
+        $endpoint = 'https://api.box.com/2.0/files/:file_id#remove_shared_link';
+        $params = [
+            ':file_id' => $file_id,
+        ];
+        
+        $data = [
+            'shared_link' => null,
+        ];
+        
+        $uri = $this->generate_uri($endpoint, $params);
+        $this->response = $this->put($uri, $data);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                $this->hydrate($this->getResponse());
+                return $this;
+            case 304:
+                /**
+                 * @TODO Populate Error Responses.
+                 */
+            case 401:
+            case 404:
+            case 405:
+            case 412:
+            default:
+                /**
+                 * An unexpected client error.
+                 */
+                return $this->error();
+        }
+    }
+    
     public function add_shared_link_to_folder(string $folder_id = null, Query $query = null)
     {
         if (!isset($folder_id)) {
