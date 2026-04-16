@@ -240,9 +240,35 @@ class BoxSignRequest extends AbstractResource
         }
     }
     
-    public function cancel_box_sign_request()
+    public function cancel_box_sign_request(string $sign_request_id): self|ClientError
     {
+        $endpoint = 'https://api.box.com/2.0/sign_requests/:sign_request_id/cancel';
         
+        $params = [
+            ':sign_request_id' => $sign_request_id,
+        ];
+        
+        $uri = strtr($endpoint, $params);
+        $this->response = $this->post($uri, null);
+        
+        switch ($this->response->getStatusCode())
+        {
+            case 200:
+                /**
+                 * Returns an empty response when the API call was successful. The email notifications will be sent asynchronously.
+                 */
+                $this->hydrate($this->response);
+                return $this;
+            case 404:
+                /**
+                 * Returns an error when the signature request cannot be found or the user does not have access to the signature request.
+                 */
+            default:
+                /**
+                 * An unexpected client error
+                 */
+                return $this->error();
+        }
     }
     
     public function resend_box_sign_request(string $sign_request_id): self|ClientError
