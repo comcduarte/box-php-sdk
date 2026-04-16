@@ -181,7 +181,7 @@ class BoxSignRequest extends AbstractResource
         }
     }
     
-    public function get_box_sign_request_by_id(string $sign_request_id): BoxSignRequest
+    public function get_box_sign_request_by_id(string $sign_request_id): self|ClientError
     {
         if (!isset($sign_request_id)) {
             throw new ClientErrorException('No sign_request_id parameter.');
