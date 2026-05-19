@@ -519,7 +519,13 @@ class Folder extends AbstractResource
     
     public function move_folder(string $folder_id, string $parent)
     {
+        $data = [
+            'parent' => [
+                'id' => $parent
+            ],
+        ];
         
+        return $this->update_folder($folder_id, $data);
     }
     
     public function update_folder(string $folder_id, array $data): Folder|ClientError
