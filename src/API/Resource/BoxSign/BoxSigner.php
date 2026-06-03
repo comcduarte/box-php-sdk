@@ -35,7 +35,7 @@ class BoxSigner
 
     public string $signer_group_id;
 
-    public bool $supress_notificaitons;
+    public bool $suppress_notifications;
 
     public string $verification_phone_number;
 }
