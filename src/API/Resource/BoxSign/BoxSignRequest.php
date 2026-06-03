@@ -9,6 +9,7 @@ use comcduarte\Box\API\Resource\Files;
 use comcduarte\Box\API\Resource\Folder;
 use comcduarte\Box\API\Resource\ClientError;
 use comcduarte\Box\API\Exception\ClientErrorException;
+use comcduarte\Box\API\Resource\Query;
 
 class BoxSignRequest extends AbstractResource
 {
@@ -215,11 +216,16 @@ class BoxSignRequest extends AbstractResource
         }
     }
     
-    public function list_box_sign_requests(): BoxSignRequests|ClientError
+    public function list_box_sign_requests(?Query $query): BoxSignRequests|ClientError
     {
         $endpoint = 'https://api.box.com/2.0/sign_requests';
         $params = [ // -- No Parameters Required --//
         ];
+        
+        if (isset($query)) {
+            $endpoint .= '?:query';
+            $params[':query'] = http_build_query($query->getArrayCopy());
+        }
         
         $uri = $this->generate_uri($endpoint, $params);
         $this->response = $this->get($uri);
