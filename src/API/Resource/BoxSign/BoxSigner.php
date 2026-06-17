@@ -9,7 +9,7 @@ class BoxSigner
 
     public string $email;
 
-    public string $emed_url;
+    public string $embed_url;
 
     public string $embed_url_external_user_id;
 
