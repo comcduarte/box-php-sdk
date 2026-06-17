@@ -82,9 +82,11 @@ class BoxSignRequest extends AbstractResource
         return $this;
     }
     
-    public function getSignFiles()
+    public function getSignFiles(): ?array
     {
-        return $this->sign_files;
+        return isset($this->sign_files)
+            ? $this->sign_files
+            : null;
     }
     
     public function setSignFiles($sign_files)
@@ -98,9 +100,11 @@ class BoxSignRequest extends AbstractResource
         return $this;
     }
     
-    public function getSigningLog(): File
+    public function getSigningLog(): ?File
     {
-        return $this->signing_log;
+        return isset($this->signing_log)
+            ? $this->signing_log
+            : null;
     }
     
     public function setSigningLog($signing_log)
