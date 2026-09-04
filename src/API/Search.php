@@ -1,6 +1,7 @@
 <?php
 namespace comcduarte\Box\API;
 
+use comcduarte\Box\API\Enum\ResourceType;
 use comcduarte\Box\API\Resource\ClientError;
 use comcduarte\Box\API\Resource\MetadataQuerySearchResults;
 
@@ -13,7 +14,7 @@ class Search extends Resource\AbstractResource
 {
     const TYPE_FILE      = 'file';
     const TYPE_FOLDER    = 'folder';
-    const TYPE_WEBLINK   = 'web_link';
+    const TYPE_WEBLINK   = 'weblink';
     
     const CONTENT_TYPE_NAME          = 'name';
     const CONTENT_TYPE_DESCRIPTION   = 'description';
@@ -36,7 +37,7 @@ class Search extends Resource\AbstractResource
      * web_link - Limits the search results to web links, also known as bookmarks
      * @var string
      */
-    public $type;
+    public ResourceType $type;
     
     /**
      * Limits the search results to items within the given list of folders, defined as a comma separated lists of folder IDs.
@@ -357,6 +358,10 @@ class Search extends Resource\AbstractResource
         foreach ($properties as $property) {
             $name = $property->name;
             if (isset($this->$name)) {
+                if ($this->$name instanceof ResourceType) {
+                    $query[$name] = $this->$name->value;
+                    continue;
+                }
                 $query[$name] = $this->$name;
             }
         }
