@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace comcduarte\Box\API\Resource;
 
 class Option
@@ -7,17 +9,11 @@ class Option
      * 
      * @var string
      */
-    public $id;
+    public string $id;
     
     /**
      * 
      * @var string
      */
-    public $key;
-    
-    /**
-     * 
-     * @var object
-     */
-    public $staticConfig;
+    public string $key;
 }
